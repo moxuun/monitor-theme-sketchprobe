@@ -634,6 +634,55 @@ img {
   text-overflow: ellipsis;
 }
 
+.card-latency {
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.card-latency-label {
+  display: block;
+  margin-bottom: 5px;
+  font-family: var(--font-hand);
+  font-size: 13px;
+}
+
+.card-latency-lines {
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.card-latency-lines > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.card-latency-lines dt {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.card-latency-lines dd {
+  margin: 0;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.card-latency-lines dd.error {
+  color: var(--bad);
+}
+
+.card-latency-lines time {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
 .card-foot {
   display: flex;
   align-items: center;

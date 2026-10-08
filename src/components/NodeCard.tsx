@@ -2,13 +2,14 @@ import type { Node } from "@/lib/api"
 import { expiryOf, loadColor, statusOf } from "@/lib/derive"
 import { pair, percent, rate } from "@/lib/format"
 import { Link } from "@/lib/route"
+import type { LatencyResult } from "@/lib/latency"
 import { Badge } from "@/components/Badge"
 import { Flag } from "@/components/Flag"
 import { Icon } from "@/components/Icon"
 import { Meter } from "@/components/Meter"
 import { SketchBox } from "@/sketch/Sketch"
 
-export function NodeCard({ node }: { node: Node }) {
+export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResult }) {
   const m = node.metrics
   const status = statusOf(node)
   const expiry = expiryOf(node)
@@ -79,6 +80,29 @@ export function NodeCard({ node }: { node: Node }) {
               seedKey={`${node.id}-traffic`}
             />
           ) : null}
+        </div>
+      ) : null}
+
+      {node.online ? (
+        <div className="card-latency">
+          <span className="card-latency-label">延迟 · 最近采样</span>
+          {!latency ? <span>读取中…</span> : latency.error ? (
+            <span>延迟暂不可用</span>
+          ) : latency.lines.length === 0 ? <span>暂无探测记录</span> : (
+            <dl className="card-latency-lines">
+              {latency.lines.map((line) => (
+                <div key={line.id}>
+                  <dt>{line.name}</dt>
+                  <dd className={line.value === null ? "error" : undefined}>
+                    {line.value === null ? "超时" : `${Number(line.value.toFixed(1))} ms`}
+                    <time dateTime={new Date(line.ts * 1000).toISOString()}>
+                      {new Date(line.ts * 1000).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false })}
+                    </time>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
       ) : null}
 

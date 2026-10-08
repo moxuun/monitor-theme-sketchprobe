@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { api, groupsOf, useNodes } from "@/lib/api"
 import { FIELDS, loadConfig } from "@/lib/config"
 import { Link, useNodeRoute } from "@/lib/route"
+import { useLatencies } from "@/lib/latency"
 import { Icon } from "@/components/Icon"
 import { NodeCard } from "@/components/NodeCard"
 import { NodeDetail } from "@/components/NodeDetail"
@@ -121,6 +122,8 @@ export function App() {
     [nodes, group],
   )
 
+  const latencies = useLatencies(openId === null && !closed ? shown.filter((n) => n.online).map((n) => n.id) : [])
+
   const wobble = typeof config.wobble === "number" ? config.wobble : 2
   const notice = typeof config.notice === "string" ? config.notice : ""
   const showSummary = config.show_summary !== false
@@ -229,7 +232,7 @@ export function App() {
             {shown.length ? (
               <div className="grid">
                 {shown.map((n) => (
-                  <NodeCard key={n.id} node={n} />
+                  <NodeCard key={n.id} node={n} latency={latencies[n.id]} />
                 ))}
               </div>
             ) : (
