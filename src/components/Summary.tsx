@@ -1,7 +1,9 @@
 import { speedHistory, type Node } from "@/lib/api"
 import { bytes, rate } from "@/lib/format"
+import { loadColor } from "@/lib/derive"
 import { Icon } from "@/components/Icon"
-import { SketchBox, useBoxSize } from "@/sketch/Sketch"
+import { SketchBox, SketchSvg, useBoxSize, usePenFactor, useSketchSeed } from "@/sketch/Sketch"
+import { dial, flow, link, rack } from "@/sketch/shapes"
 
 /** Two lines of throughput over the last two minutes, one point per push. */
 function Spark({ series }: { series: { rx: number; tx: number }[] }) {
@@ -31,34 +33,54 @@ function Spark({ series }: { series: { rx: number; tx: number }[] }) {
   )
 }
 
-function Tile({ label, children, note, foot, seedKey }: { label: string; children: React.ReactNode; note?: React.ReactNode; foot?: React.ReactNode; seedKey: string }) {
+function Tile({ label, children, note, art, seedKey }: { label: string; children: React.ReactNode; note?: React.ReactNode; art?: React.ReactNode; seedKey: string }) {
   return (
-    <SketchBox className="tile" seedKey={seedKey} radius={10}>
-      <div className="label">{label}</div>
-      <div className="tile-value">{children}</div>
-      {note ? <div className="tile-note">{note}</div> : null}
-      {foot ?? null}
+    <SketchBox className="tile tile-figure" seedKey={seedKey} radius={10}>
+      <div className="tile-text">
+        <div className="label">{label}</div>
+        <div className="tile-value">{children}</div>
+        {note ? <div className="tile-note">{note}</div> : null}
+      </div>
+      {art ? <div className="tile-art">{art}</div> : null}
     </SketchBox>
   )
 }
 
-/**
- * A sketch of the node set: two servers and an ellipsis in a dashed pen box.
- *
- * It says "nodes, and more of them" and deliberately is not a count -- the
- * figure above it is the count. Two marks and an ellipsis rather than one per
- * node, so a full fleet and a nearly empty one draw the same sketch.
- */
-function NodeSketch() {
+/** The node tile's figure: a rack of slots. Decoration -- the figure beside it
+    is the count, and this one does not try to be one. */
+function RackArt() {
+  const factor = usePenFactor()
+  const seed = useSketchSeed("sum-art-nodes")
+  return <SketchSvg seed={seed} render={(gen, w, h) => rack(gen, w, h, { factor, seed })} />
+}
+
+/** The busiest node's CPU on a dial. No needle when nothing is reporting, and
+    the needle carries the load colour the meters already use. */
+function DialArt({ cpu }: { cpu: number | null }) {
+  const factor = usePenFactor()
+  const seed = useSketchSeed("sum-art-busy")
+  const frac = cpu === null ? null : Math.min(1, Math.max(0, cpu / 100))
   return (
-    <SketchBox className="node-sketch" seedKey="sum-nodes-sketch" radius={5} dashed stroke="var(--rule)" strokeWidth={1.2}>
-      <Icon name="server" size={12} />
-      <Icon name="server" size={12} />
-      <span className="node-sketch-more" aria-hidden="true">
-        …
-      </span>
-    </SketchBox>
+    <SketchSvg
+      seed={seed}
+      revision={frac}
+      render={(gen, w, h) => dial(gen, w, h, { factor, seed, frac, color: cpu === null ? undefined : loadColor(cpu) })}
+    />
   )
+}
+
+/** The day's throughput: in and out of a container. */
+function FlowArt() {
+  const factor = usePenFactor()
+  const seed = useSketchSeed("sum-art-day")
+  return <SketchSvg seed={seed} render={(gen, w, h) => flow(gen, w, h, { factor, seed })} />
+}
+
+/** The live rate: a two-way link with its signal, above the spark. */
+function LinkArt() {
+  const factor = usePenFactor()
+  const seed = useSketchSeed("sum-art-speed")
+  return <SketchSvg seed={seed} render={(gen, w, h) => link(gen, w, h, { factor, seed })} />
 }
 
 /** The four figures above the node list, scoped to the tab that is showing. */
@@ -80,7 +102,7 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
       <Tile
         label="节点"
         seedKey="sum-nodes"
-        foot={<NodeSketch />}
+        art={<RackArt />}
         note={
           <span className="with-icon">
             <Icon name="bracket" size={13} />
@@ -94,6 +116,7 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
       <Tile
         label="最忙节点"
         seedKey="sum-busy"
+        art={<DialArt cpu={busiest ? (busiest.metrics?.cpu ?? 0) : null} />}
         note={busiest ? busiest.name : "没有节点在线"}
       >
         {busiest ? `${(busiest.metrics?.cpu ?? 0).toFixed(0)}%` : "—"}
@@ -101,6 +124,7 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
       <Tile
         label="今日流量"
         seedKey="sum-day"
+        art={<FlowArt />}
         note={
           <span className="io">
             <span className="io-item down">
@@ -116,19 +140,24 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
       >
         {bytes(dayRx + dayTx)}
       </Tile>
-      <SketchBox className="tile" seedKey="sum-speed" radius={10}>
-        <div className="label">实时网速</div>
-        <div className="tile-value small">
-          <span className="io-item down">
-            <Icon name="down" size={13} />
-            {rate(last.rx)}
-          </span>
+      <SketchBox className="tile tile-figure" seedKey="sum-speed" radius={10}>
+        <div className="tile-text">
+          <div className="label">实时网速</div>
+          <div className="tile-value small">
+            <span className="io-item down">
+              <Icon name="down" size={13} />
+              {rate(last.rx)}
+            </span>
+          </div>
+          <div className="tile-note">
+            <span className="io-item up">
+              <Icon name="up" size={12} />
+              {rate(last.tx)}
+            </span>
+          </div>
         </div>
-        <div className="tile-note">
-          <span className="io-item up">
-            <Icon name="up" size={12} />
-            {rate(last.tx)}
-          </span>
+        <div className="tile-art">
+          <LinkArt />
         </div>
         <Spark series={series} />
       </SketchBox>

@@ -432,21 +432,40 @@ img {
   text-overflow: ellipsis;
 }
 
-/* A sketch of the node set, in the blank the tallest tile of the row leaves
-   under this one. Decoration: the figure above it is the count. */
-.node-sketch {
-  display: inline-flex;
+/* A summary tile keeps its text in a column of its own, so the figure drawn in
+   the blank beside it can drop below on a tile too narrow for both, rather than
+   end up over the numbers. The detail page's tile is a plain `.tile` and is
+   unaffected. */
+.tile-figure {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 3px;
-  margin-top: 4px;
-  padding: 3px 7px;
-  color: var(--muted);
+  justify-content: space-between;
+  gap: 8px 12px;
 }
 
-.node-sketch-more {
-  font-family: var(--font-hand);
-  font-size: 13px;
-  line-height: 1;
+.tile-text {
+  flex: 1 1 128px;
+  /* Without this the value's ellipsis never engages: a flex item refuses to
+     shrink past its content, and the drawing beside it would be pushed out. */
+  min-width: 0;
+}
+
+/* The pen figure: a fixed canvas at the size the shapes were laid out for, so
+   the wobble stays the same width here as everywhere else. */
+.tile-art {
+  position: relative;
+  isolation: isolate;
+  flex: 0 0 auto;
+  width: 84px;
+  height: 60px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* The live-rate tile keeps its spark on a line of its own, under both columns. */
+.tile-figure > .spark {
+  flex: 0 0 100%;
 }
 
 .spark {
