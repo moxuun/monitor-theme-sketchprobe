@@ -1,0 +1,28 @@
+{
+  "name": "monitor-theme-sketchprobe",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:mock": "MONITOR_MOCK=1 vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "preview:mock": "MONITOR_MOCK=1 vite preview",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "country-flag-icons": "^1.6.20",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "roughjs": "^4.6.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2"
+  }
+}

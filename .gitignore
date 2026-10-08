@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tsbuildinfo
+
+# The published archive. Rebuilt by the release step, never committed.
+theme.tar.gz
+
+# Local agent instructions. Not part of the theme.
+AGENTS.md
+
+# Browser automation scratch.
+.playwright-mcp/

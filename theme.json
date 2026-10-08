@@ -1,0 +1,47 @@
+{
+  "name": "SketchProbe",
+  "short": "sketchprobe",
+  "description": "手绘工程草图风，灵感来自 Excalidraw、Nord 主题",
+  "version": "0.1.0",
+  "author": "moxuun",
+  "url": "https://github.com/moxuun/monitor-theme-sketchprobe",
+  "config": [
+    { "type": "title", "label": "页面" },
+    {
+      "key": "notice",
+      "type": "text",
+      "label": "公告",
+      "default": "",
+      "help": "显示在页面顶部，留空不显示"
+    },
+    {
+      "key": "show_summary",
+      "type": "boolean",
+      "label": "显示汇总",
+      "default": true,
+      "help": "节点列表上方的节点数、最忙节点、流量和网速四格"
+    },
+    { "type": "title", "label": "纸张" },
+    {
+      "key": "paper",
+      "type": "select",
+      "label": "底纹",
+      "default": "grid",
+      "options": [
+        { "value": "grid", "label": "方格纸" },
+        { "value": "dots", "label": "点阵纸" },
+        { "value": "lines", "label": "横线纸" },
+        { "value": "plain", "label": "空白纸" }
+      ]
+    },
+    {
+      "key": "wobble",
+      "type": "number",
+      "label": "手绘程度",
+      "default": 2,
+      "min": 0,
+      "max": 4,
+      "help": "0 最规整，4 最潦草"
+    }
+  ]
+}

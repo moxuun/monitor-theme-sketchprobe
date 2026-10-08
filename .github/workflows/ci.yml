@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    # Prose changes nothing a compiler can check.
+    paths-ignore: ["**.md", "LICENSE"]
+  pull_request:
+    paths-ignore: ["**.md", "LICENSE"]
+
+# A new push supersedes any run still in progress for the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The only gate a tag receives: a hub installs the released archive as built,
+  # so nothing checks the source after release.yml has run.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # A hub decides whether an installed theme is current by comparing the
+      # release tag against the version inside the installed theme.json, and a
+      # pushed v* tag can be neither moved nor deleted. Three files carry that
+      # version, so any one of them drifting means the panel offers the same
+      # release as an update forever; release.yml then holds the tag to it too.
+      - run: |
+          V=$(node -p 'require("./theme.json").version')
+          for f in package.json package-lock.json; do
+            [ "$(node -p "require('./$f').version")" = "$V" ] || { echo "::error file=$f::version differs from theme.json $V"; exit 1; }
+          done
+      - run: npm run typecheck
+      - run: npm run build
