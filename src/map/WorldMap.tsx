@@ -301,9 +301,11 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
   // The handler is read through a ref so the listener is attached once.
   const wheel = useRef<(e: WheelEvent) => void>(() => {})
   wheel.current = (e: WheelEvent) => {
-    e.preventDefault()
     const el = ref.current
-    if (!el) return
+    if (!el || fit <= 0 || e.deltaY === 0) return
+    // At a zoom limit, let the browser scroll the page in that direction.
+    if (e.deltaY > 0 ? view.z <= Z_MIN : view.z >= Z_MAX) return
+    e.preventDefault()
     const box = el.getBoundingClientRect()
     zoomAt(e.clientX - box.left, e.clientY - box.top, Math.exp(-e.deltaY * 0.0022))
   }
