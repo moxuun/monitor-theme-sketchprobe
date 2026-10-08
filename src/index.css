@@ -210,6 +210,13 @@ img {
   gap: 5px;
 }
 
+/* A mark set inline in a run of text rather than in a flex row of its own: the
+   baseline nudge is what keeps a 12px symbol level with 12px text. */
+.mark-inline {
+  vertical-align: -2.5px;
+  margin-right: 5px;
+}
+
 /* --------------------------------------------------------------- sketch -- */
 
 .sketch-layer {

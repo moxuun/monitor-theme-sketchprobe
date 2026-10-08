@@ -26,7 +26,7 @@ import { Icon, type IconName } from "@/components/Icon"
 import { Meter } from "@/components/Meter"
 import { SketchBox, SketchRing } from "@/sketch/Sketch"
 
-function Fact({ label, children, hand }: { label: string; children: ReactNode; hand?: boolean }) {
+function Fact({ label, children, hand }: { label: ReactNode; children: ReactNode; hand?: boolean }) {
   return (
     <div className="fact">
       <span className="fact-key">{label}</span>
@@ -95,7 +95,12 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
         </div>
       </SketchBox>
 
-      {node.public_remark ? <SketchBox className="notice" seedKey={`remark-${node.id}`}>{node.public_remark}</SketchBox> : null}
+      {node.public_remark ? (
+        <SketchBox className="notice" seedKey={`remark-${node.id}`}>
+          <Icon name="comment" size={13} className="mark-inline" />
+          {node.public_remark}
+        </SketchBox>
+      ) : null}
 
       {m ? (
         <SketchBox className="tile" seedKey={`load-${node.id}`} radius={10}>
@@ -131,7 +136,15 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
       <SketchBox className="facts" seedKey={`facts-${node.id}`} radius={10}>
         <Fact label="内核">{node.kernel || "—"}</Fact>
         <Fact label="架构">{node.arch ? `${node.arch} · ${node.virt}` : "—"}</Fact>
-        <Fact label="处理器" hand>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="chip" size={13} />
+              处理器
+            </span>
+          }
+          hand
+        >
           {node.cpu_name ? `${cpuName(node.cpu_name)} · ${node.cpu_cores} 核` : "—"}
         </Fact>
         <Fact label="内存">{node.mem_total ? bytes(node.mem_total) : "—"}</Fact>
@@ -144,7 +157,14 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
         <Fact label="计费">
           {node.price > 0 ? `${money(node.price, node.currency || "CNY")} / ${cycle(node.billing_cycle)}` : "免费"}
         </Fact>
-        <Fact label="到期">
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="calendar" size={13} />
+              到期
+            </span>
+          }
+        >
           {days === null || days === undefined
             ? FOREVER
             : days < 0
