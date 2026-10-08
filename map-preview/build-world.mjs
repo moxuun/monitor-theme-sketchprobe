@@ -98,14 +98,21 @@ function simplify(points, tolerance) {
     const [bx, by] = open[last]
     const dx = bx - ax
     const dy = by - ay
-    const len = Math.hypot(dx, dy) || 1
+    const len = Math.hypot(dx, dy)
     let worst = -1
     let at = -1
     for (let i = first + 1; i < last; i++) {
       const [x, y] = open[i]
       // Perpendicular distance, scaled by the segment length so the division
       // only happens once for the winner.
-      const d = Math.abs((x - ax) * dy - (y - ay) * dx) / len
+      //
+      // A ring that repeats its first point leaves the baseline with no
+      // direction, and the perpendicular distance to a zero-length segment is
+      // zero for every point -- so the pass would keep none of them and the
+      // ring would be dropped for being degenerate. Alaska is such a ring: it
+      // is the only one in 110m, and losing it loses the whole state. Measure
+      // to the point itself when the baseline has no length.
+      const d = len > 0 ? Math.abs((x - ax) * dy - (y - ay) * dx) / len : Math.hypot(x - ax, y - ay)
       if (d > worst) {
         worst = d
         at = i
