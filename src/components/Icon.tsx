@@ -86,12 +86,13 @@ const PATHS = {
     "M5.1 11c1.2-.05 2.4-.05 3.6 0",
   ],
   // A link that has come apart: the two ends stopped short of each other, with
-  // a cross in the gap.
+  // a cross in the gap. The gap is wide on purpose -- at 12px the round caps
+  // close a narrower one and the whole mark fills in as a single smudged dash.
   timeout: [
-    "M2.1 8.05c1.4-.05 2.85-.05 4.25 0",
-    "M9.65 8.05c1.45-.05 2.85-.05 4.25 0",
-    "M7.3 7.35c.45.45.9.9 1.4 1.4",
-    "M8.7 7.35c-.45.45-.9.9-1.4 1.4",
+    "M1.7 8.05c.8-.05 1.6-.05 2.4 0",
+    "M14.3 7.95c-.8.05-1.6.05-2.4 0",
+    "M6.2 6.2c1.2 1.2 2.4 2.4 3.6 3.6",
+    "M9.8 6.2c-1.2 1.2-2.4 2.4-3.6 3.6",
   ],
   // A dial: the half-round scale, the needle, and the pivot it turns on.
   gauge: [
