@@ -7,6 +7,21 @@
  * is a variable swap and nothing has to be redrawn.
  */
 
+/*
+ * Cabin Sketch, a sketched slab serif. OFL-1.1, self-hosted. A place name on a
+ * hand-drawn map is lettered, not stuck on: a continent name set in the body
+ * sans reads as a UI label that happens to sit on the paper, which is exactly
+ * what the map is trying not to be. Esri's Colored Pencil basemap lettered its
+ * names the same way, with a rough serif rather than a clean one.
+ */
+@font-face {
+  font-family: "Cabin Sketch";
+  src: url("./fonts/CabinSketch-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
   --mp-desk: #ddd4c0;
   --mp-paper: #f6f1e4;
@@ -28,6 +43,7 @@
   --mp-bad: #bd5340;
   --mp-idle: #8d8578;
   --mp-font: "LXGW WenKai", "Kaiti SC", "KaiTi", "STKaiti", "Segoe Print", ui-rounded, system-ui, sans-serif;
+  --mp-font-hand: "Cabin Sketch", "LXGW WenKai", "Kaiti SC", "KaiTi", "STKaiti", ui-rounded, system-ui, sans-serif;
   --mp-font-data: "JetBrainsMono NF", "JetBrainsMono Nerd Font", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
@@ -189,6 +205,40 @@ body {
 .mp-grat line.mp-grat-main {
   stroke-dasharray: 7 4;
   opacity: 0.95;
+}
+
+/*
+ * Place names. Drawn at a point in map units but counter-scaled to the current
+ * zoom, so a label sits on the map and travels with it while staying the size
+ * of type -- letters that grow with the zoom stop being readable. Tracking is
+ * in em, which survives that counter-scale; a fixed px would not.
+ *
+ * Each name carries a halo in the colour of the surface under it, painted
+ * before the letters rather than after. Without one the pencil hatching runs
+ * straight through the strokes, and a name turns to noise exactly where the
+ * map is most worked -- over land. The halo is opaque where the fill is not,
+ * so it lifts the letters off the texture without making them darker than they
+ * should be.
+ */
+.mp-label {
+  font-family: var(--mp-font-hand);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  fill: var(--mp-ink);
+  fill-opacity: 0.76;
+  paint-order: stroke;
+  stroke: var(--mp-land);
+  stroke-width: 2.6px;
+  stroke-linejoin: round;
+}
+
+/* Sea names take the water's own colour, the way an atlas prints them. */
+.mp-label[data-kind="ocean"] {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  fill: var(--mp-ocean-ink);
+  fill-opacity: 0.85;
+  stroke: var(--mp-ocean);
 }
 
 .mp-compass path {
