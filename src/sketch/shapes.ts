@@ -146,3 +146,138 @@ export function axes(gen: RoughGenerator, w: number, h: number, o: Pen): Drawabl
     gen.line(1, h - 1, Math.max(3, w - 1), h - 1, inkOptions(o.factor, { ...line, seed: o.seed + 1 })),
   ]
 }
+
+/* --------------------------------------------------------- summary art -- */
+
+/**
+ * Points along a circular arc.
+ *
+ * The generator's own `arc` closes the sweep into a loop, which reads as a
+ * scribbled circle rather than the half of one a dial needs, so the curves here
+ * are sampled and drawn as paths instead. Angles are degrees, 0 at three
+ * o'clock, counterclockwise.
+ */
+function arcPoints(cx: number, cy: number, r: number, from: number, to: number, steps = 8): [number, number][] {
+  const points: [number, number][] = []
+  for (let i = 0; i <= steps; i++) {
+    const a = ((from + ((to - from) * i) / steps) * Math.PI) / 180
+    points.push([cx + Math.cos(a) * r, cy - Math.sin(a) * r])
+  }
+  return points
+}
+
+/**
+ * A rack of node slots, for the node-count tile.
+ *
+ * Decoration, deliberately: it says "a set of machines" and is not a count of
+ * anything. A drawing that tried to encode the fleet would be the first thing on
+ * the page to disagree with the figure beside it, the moment there are more
+ * nodes than there are slots to draw them in.
+ */
+export function rack(gen: RoughGenerator, w: number, h: number, o: Pen): Drawable[] {
+  const shapes: Drawable[] = [gen.path(roundRect(2, 2, w - 4, h - 4, 4), inkOptions(o.factor, { seed: o.seed, strokeWidth: 1.4 }))]
+  const slot = 11
+  const top = 6
+  const gap = (h - top * 2 - slot * 3) / 2
+  for (let i = 0; i < 3; i++) {
+    const y = top + i * (slot + gap)
+    const seed = o.seed + i * 7
+    shapes.push(gen.path(roundRect(10, y, w - 20, slot, 2.5), inkOptions(o.factor, { seed, strokeWidth: 1.2 })))
+    shapes.push(gen.circle(15.5, y + slot / 2, 2.4, inkOptions(o.factor, { seed: seed + 1, strokeWidth: 1.1 })))
+    shapes.push(gen.line(w - 27, y + slot / 2, w - 15, y + slot / 2, inkOptions(o.factor, { seed: seed + 2, strokeWidth: 1.1 })))
+  }
+  return shapes
+}
+
+/**
+ * A dial beside the chip it reads, for the busiest node's CPU.
+ *
+ * `frac` is null when nothing is reporting, and then there is no needle at all:
+ * one parked at zero would say "idle" about a node that is not there.
+ */
+export function dial(gen: RoughGenerator, w: number, h: number, o: Pen & { frac: number | null; color?: string }): Drawable[] {
+  const shapes: Drawable[] = []
+  const cy = h - 20
+  const cx = w - 24
+  const r = 19
+
+  shapes.push(gen.path(roundRect(4, cy - 13, 22, 26, 3), inkOptions(o.factor, { seed: o.seed, strokeWidth: 1.3 })))
+  for (let i = 0; i < 3; i++) {
+    const y = cy - 8 + i * 8
+    const seed = o.seed + 1 + i * 2
+    shapes.push(gen.line(4, y, -1, y, inkOptions(o.factor, { seed, strokeWidth: 1.1 })))
+    shapes.push(gen.line(26, y, 31, y, inkOptions(o.factor, { seed: seed + 1, strokeWidth: 1.1 })))
+  }
+
+  shapes.push(gen.curve(arcPoints(cx, cy, r, 0, 180, 10), inkOptions(o.factor, { seed: o.seed + 8, strokeWidth: 1.4 })))
+  for (const deg of [0, 90, 180]) {
+    const a = (deg * Math.PI) / 180
+    shapes.push(
+      gen.line(
+        cx + Math.cos(a) * (r - 5),
+        cy - Math.sin(a) * (r - 5),
+        cx + Math.cos(a) * r,
+        cy - Math.sin(a) * r,
+        inkOptions(o.factor, { seed: o.seed + 9 + deg, strokeWidth: 1.2 }),
+      ),
+    )
+  }
+  shapes.push(gen.circle(cx, cy, 3, inkOptions(o.factor, { seed: o.seed + 13, strokeWidth: 1.2 })))
+  if (o.frac !== null) {
+    const a = Math.PI * (1 - o.frac)
+    shapes.push(
+      gen.line(cx, cy, cx + Math.cos(a) * (r - 3), cy - Math.sin(a) * (r - 3), inkOptions(o.factor, { seed: o.seed + 14, strokeWidth: 1.6, stroke: o.color ?? "var(--ink)" })),
+    )
+  }
+  return shapes
+}
+
+/**
+ * In and out of a container, for the day's throughput.
+ *
+ * The two arrows carry the directions the theme already colours: in is the blue,
+ * out is the plum, the same pairing as the io marks beside them.
+ */
+export function flow(gen: RoughGenerator, w: number, h: number, o: Pen): Drawable[] {
+  const shapes: Drawable[] = []
+  const cx = w / 2
+  shapes.push(
+    gen.path(roundRect(cx - 19, h - 24, 38, 20, 3), pencilOptions(o.factor, { seed: o.seed, strokeWidth: 1.3, fill: "var(--rule)", hachureGap: 5 })),
+  )
+  const arrows: [number, number, number, string][] = [
+    [cx - 12, 6, h - 30, "var(--accent)"],
+    [cx + 12, h - 30, 6, "var(--plum)"],
+  ]
+  arrows.forEach(([x, from, to, color], i) => {
+    const seed = o.seed + 1 + i * 4
+    const dir = to > from ? 1 : -1
+    shapes.push(gen.line(x, from, x, to, inkOptions(o.factor, { seed, strokeWidth: 1.4, stroke: color })))
+    shapes.push(
+      gen.path(`M${x - 4},${to - dir * 6} L${x},${to} L${x + 4},${to - dir * 6}`, inkOptions(o.factor, { seed: seed + 1, strokeWidth: 1.4, stroke: color })),
+    )
+  })
+  return shapes
+}
+
+/**
+ * A two-way link with its signal, for the live-rate tile.
+ *
+ * The same pairing again: out on the blue, back on the plum.
+ */
+export function link(gen: RoughGenerator, w: number, h: number, o: Pen): Drawable[] {
+  const shapes: Drawable[] = []
+  const out = h * 0.35
+  const back = h * 0.65
+  const end = w * 0.6
+  const mid = h / 2
+  shapes.push(gen.line(6, out, end, out, inkOptions(o.factor, { seed: o.seed, strokeWidth: 1.4, stroke: "var(--accent)" })))
+  shapes.push(gen.path(`M${end - 6},${out - 5} L${end},${out} L${end - 6},${out + 5}`, inkOptions(o.factor, { seed: o.seed + 1, strokeWidth: 1.4, stroke: "var(--accent)" })))
+  shapes.push(gen.line(end, back, 6, back, inkOptions(o.factor, { seed: o.seed + 2, strokeWidth: 1.4, stroke: "var(--plum)" })))
+  shapes.push(gen.path(`M12,${back - 5} L6,${back} L12,${back + 5}`, inkOptions(o.factor, { seed: o.seed + 3, strokeWidth: 1.4, stroke: "var(--plum)" })))
+  const cx = w * 0.75
+  for (let i = 0; i < 2; i++) {
+    const r = 8 + i * 7
+    shapes.push(gen.curve(arcPoints(cx, mid, r, -40, 40, 6), inkOptions(o.factor, { seed: o.seed + 4 + i, strokeWidth: 1.3 })))
+  }
+  return shapes
+}
