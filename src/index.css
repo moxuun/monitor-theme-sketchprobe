@@ -47,7 +47,7 @@
   --map-land: rgba(198, 174, 126, 0.55);
   --map-land-ink: #93805a;
   --map-coast: #6b6053;
-  --map-sea-ink: #7ba3b0;
+  --map-sea-ink: #5b86ad;
   --map-sea: color-mix(in srgb, var(--accent) 10%, transparent);
 
   --font-hand: "Excalifont", "LXGW WenKai", "Kaiti SC", "KaiTi", "STKaiti", "TW-Kai", "Noto Serif SC", ui-serif, serif;
@@ -85,7 +85,7 @@
   --map-land: rgba(110, 98, 68, 0.32);
   --map-land-ink: #9a8b6a;
   --map-coast: #a2967e;
-  --map-sea-ink: #5b8b9a;
+  --map-sea-ink: #7aa4c6;
   --map-sea: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
@@ -886,6 +886,7 @@ img {
 
 .map-land path {
   fill: url(#map-land);
+  stroke: currentColor;
   stroke-width: 1.2;
   stroke-linejoin: round;
 }
@@ -902,6 +903,40 @@ img {
    has a spine to read the markers against. */
 .map-grat-main {
   stroke: var(--muted);
+}
+
+/*
+ * Place names. Drawn at a point in map units but counter-scaled to the current
+ * zoom, so a label sits on the map and travels with it while staying the size
+ * of type -- letters that grow with the zoom stop being readable. Tracking is
+ * in em, which survives that counter-scale; a fixed px would not.
+ *
+ * Each name carries a halo in the colour of the surface under it, painted
+ * before the letters rather than after. Without one the pencil hatching runs
+ * straight through the strokes, and a name turns to noise exactly where the
+ * map is most worked -- over land. The halo is opaque where the fill is not,
+ * so it lifts the letters off the texture without making them darker than they
+ * should be.
+ */
+.map-label {
+  font-family: var(--font-hand);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  fill: var(--map-land-ink);
+  fill-opacity: 0.85;
+  paint-order: stroke;
+  stroke: var(--map-land);
+  stroke-width: 2.6px;
+  stroke-linejoin: round;
+}
+
+/* Sea names take the water's own colour, the way an atlas prints them. */
+.map-label[data-kind="ocean"] {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  fill: var(--map-sea-ink);
+  fill-opacity: 0.9;
+  stroke: var(--map-sea);
 }
 
 .map-frame {

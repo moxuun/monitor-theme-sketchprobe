@@ -24,7 +24,7 @@
  * The sea has no ground of its own. This map is drawn on the panel's own paper,
  * which already carries the page's ruling and grain: painting an opaque sea over
  * it would put the map on a second sheet and cut a rectangle out of the first.
- * So the sea is a wash and a whisper of pencil over whatever the page is
+ * So the sea is a wash and a light pencil over whatever the page is
  * showing, and the coastline does the rest.
  *
  * `patternTransform` scales the tile by 1/scale. The geometry underneath is in
@@ -71,12 +71,12 @@ const SEA_TILE = 20
  * reading as drawn.
  */
 const SEA_PASSES: readonly Pass[] = [
-  [0, 1.1, SEA_TILE, 1.1, 10, 1.45, 0.75, 0.16],
-  [0, 4.9, SEA_TILE, 4.9, 10, 4.6, 0.55, 0.1],
-  [0, 8.7, SEA_TILE, 8.7, 10, 9.05, 0.7, 0.14],
-  [0, 12.5, SEA_TILE, 12.5, 10, 12.2, 0.5, 0.08],
-  [0, 16.3, SEA_TILE, 16.3, 10, 16.65, 0.65, 0.12],
-  [0, 16.8, SEA_TILE, 16.8, 10, 16.5, 0.55, 0.07],
+  [0, 1.1, SEA_TILE, 1.1, 10, 1.45, 0.75, 0.34],
+  [0, 4.9, SEA_TILE, 4.9, 10, 4.6, 0.55, 0.22],
+  [0, 8.7, SEA_TILE, 8.7, 10, 9.05, 0.7, 0.3],
+  [0, 12.5, SEA_TILE, 12.5, 10, 12.2, 0.5, 0.18],
+  [0, 16.3, SEA_TILE, 16.3, 10, 16.65, 0.65, 0.26],
+  [0, 16.8, SEA_TILE, 16.8, 10, 16.5, 0.55, 0.15],
 ]
 
 export function PencilDefs({ scale }: { scale: number }) {

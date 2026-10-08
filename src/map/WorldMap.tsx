@@ -187,6 +187,62 @@ const Geography = memo(function Geography({ offset }: { offset: number }) {
 })
 
 /**
+ * Place names, in the map's own hand.
+ *
+ * Held as longitude and latitude rather than map units, so a label stays where
+ * it was put if the drawing is ever regenerated, and kept to open water and
+ * empty interior so none of them lands under a node marker. Multi-word names
+ * are stacked: set on one line, a name that long runs off its own landmass.
+ */
+const LABELS: readonly { lines: readonly string[]; lon: number; lat: number; kind: "continent" | "ocean" }[] = [
+  { lines: ["NORTH", "AMERICA"], lon: -100, lat: 52, kind: "continent" },
+  { lines: ["SOUTH", "AMERICA"], lon: -63, lat: -26, kind: "continent" },
+  { lines: ["EUROPE"], lon: 25, lat: 61, kind: "continent" },
+  { lines: ["AFRICA"], lon: 21, lat: 2, kind: "continent" },
+  { lines: ["ASIA"], lon: 95, lat: 52, kind: "continent" },
+  { lines: ["AUSTRALIA"], lon: 134, lat: -34, kind: "continent" },
+  { lines: ["PACIFIC", "OCEAN"], lon: -152, lat: 26, kind: "ocean" },
+  { lines: ["SOUTH", "PACIFIC"], lon: -124, lat: -34, kind: "ocean" },
+  { lines: ["ATLANTIC", "OCEAN"], lon: -43, lat: 34, kind: "ocean" },
+  { lines: ["SOUTH", "ATLANTIC"], lon: -17, lat: -30, kind: "ocean" },
+  { lines: ["INDIAN", "OCEAN"], lon: 78, lat: -29, kind: "ocean" },
+]
+
+/**
+ * The names, drawn in the hand.
+ *
+ * Memoised apart from the geography rather than inside it, because the two
+ * change on different things: a label is counter-scaled, so it moves when the
+ * zoom does and not while panning, while the coastline is the reverse. Kept
+ * separate, a zoom step re-renders eleven words instead of a few hundred paths.
+ */
+const Labels = memo(function Labels({ offset, scale }: { offset: number; scale: number }) {
+  // A zero scale happens on the first render, before anything has been
+  // measured, and 1/0 is not a transform. One render later it is known.
+  const k = scale > 0 ? 1 / scale : 1
+  return (
+    <g transform={`translate(${offset} 0)`} className="map-labels">
+      {LABELS.map((l) => (
+        <text
+          key={l.lines.join(" ")}
+          className="map-label"
+          data-kind={l.kind}
+          textAnchor="middle"
+          dominantBaseline="central"
+          transform={`translate(${gx(l.lon)} ${gy(l.lat)}) scale(${k.toFixed(4)})`}
+        >
+          {l.lines.map((line, i) => (
+            <tspan key={line} x={0} dy={i === 0 ? `${-0.62 * (l.lines.length - 1)}em` : "1.24em"}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      ))}
+    </g>
+  )
+})
+
+/**
  * The world map with a node marker per country that has one.
  *
  * Node placement is the hub's country code, which is all a public status page
@@ -451,6 +507,8 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
             {/* The window can sit across the seam, in which case the map has to
                 be drawn again on the far side of it. */}
             {view.x + WORLD.w / view.z > WORLD.w ? <Geography offset={WORLD.w} /> : null}
+            <Labels offset={0} scale={s} />
+            {view.x + WORLD.w / view.z > WORLD.w ? <Labels offset={WORLD.w} scale={s} /> : null}
           </g>
 
           {/* Markers are drawn in screen pixels, not map units: one is a symbol
