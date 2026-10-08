@@ -41,31 +41,31 @@ const LAND_TILE = 24
  * what makes a hatch read as a halftone screen instead of as a hand.
  */
 const LAND_PASSES: readonly Pass[] = [
-  [0, 1.2, LAND_TILE, 1.2, 12, 1.65, 0.8, 0.27],
-  [0, 4.3, LAND_TILE, 4.3, 12, 3.95, 0.55, 0.15],
-  [0, 7.9, LAND_TILE, 7.9, 12, 8.3, 0.85, 0.23],
-  [0, 10.9, LAND_TILE, 10.9, 12, 10.55, 0.5, 0.13],
-  [0, 14.4, LAND_TILE, 14.4, 12, 14.8, 0.75, 0.25],
-  [0, 17.5, LAND_TILE, 17.5, 12, 17.2, 0.55, 0.14],
-  [0, 21, LAND_TILE, 21, 12, 21.4, 0.8, 0.21],
+  [0, 1.2, LAND_TILE, 1.2, 12, 1.65, 0.9, 0.4],
+  [0, 4.3, LAND_TILE, 4.3, 12, 3.95, 0.65, 0.24],
+  [0, 7.9, LAND_TILE, 7.9, 12, 8.3, 0.95, 0.35],
+  [0, 10.9, LAND_TILE, 10.9, 12, 10.55, 0.6, 0.21],
+  [0, 14.4, LAND_TILE, 14.4, 12, 14.8, 0.85, 0.38],
+  [0, 17.5, LAND_TILE, 17.5, 12, 17.2, 0.65, 0.22],
+  [0, 21, LAND_TILE, 21, 12, 21.4, 0.9, 0.33],
   // Re-strokes, over lines already in the tile: the doubled line is what uneven
   // pressure looks like once it has dried.
-  [0, 15.1, LAND_TILE, 15.1, 12, 14.7, 0.7, 0.1],
-  [0, 7.4, LAND_TILE, 7.4, 12, 7.8, 0.6, 0.09],
+  [0, 15.1, LAND_TILE, 15.1, 12, 14.7, 0.8, 0.16],
+  [0, 7.4, LAND_TILE, 7.4, 12, 7.8, 0.7, 0.14],
   // And twice across, so a country the size of Russia is not one direction.
-  [6.2, 0, 6.2, LAND_TILE, 5.8, 12, 0.5, 0.08],
-  [17.4, 0, 17.4, LAND_TILE, 17.8, 12, 0.45, 0.06],
+  [6.2, 0, 6.2, LAND_TILE, 5.8, 12, 0.6, 0.13],
+  [17.4, 0, 17.4, LAND_TILE, 17.8, 12, 0.55, 0.1],
 ]
 
 const OCEAN_TILE = 20
 
 const OCEAN_PASSES: readonly Pass[] = [
-  [0, 1.1, OCEAN_TILE, 1.1, 10, 1.45, 0.7, 0.17],
-  [0, 4.9, OCEAN_TILE, 4.9, 10, 4.6, 0.5, 0.11],
-  [0, 8.7, OCEAN_TILE, 8.7, 10, 9.05, 0.65, 0.15],
-  [0, 12.5, OCEAN_TILE, 12.5, 10, 12.2, 0.45, 0.09],
-  [0, 16.3, OCEAN_TILE, 16.3, 10, 16.65, 0.6, 0.12],
-  [0, 16.8, OCEAN_TILE, 16.8, 10, 16.5, 0.5, 0.07],
+  [0, 1.1, OCEAN_TILE, 1.1, 10, 1.45, 0.75, 0.16],
+  [0, 4.9, OCEAN_TILE, 4.9, 10, 4.6, 0.55, 0.1],
+  [0, 8.7, OCEAN_TILE, 8.7, 10, 9.05, 0.7, 0.14],
+  [0, 12.5, OCEAN_TILE, 12.5, 10, 12.2, 0.5, 0.08],
+  [0, 16.3, OCEAN_TILE, 16.3, 10, 16.65, 0.65, 0.12],
+  [0, 16.8, OCEAN_TILE, 16.8, 10, 16.5, 0.55, 0.07],
 ]
 
 export function PencilDefs({ scale }: { scale: number }) {

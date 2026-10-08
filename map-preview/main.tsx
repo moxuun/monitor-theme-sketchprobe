@@ -13,7 +13,7 @@ export function App() {
 
   const online = nodes.filter((n) => n.online).length
   const dark = nodes.filter((n) => n.online && n.cpu === null).length
-  const hot = nodes.filter((n) => n.online && n.cpu !== null && n.cpu >= 75).length
+  const hot = nodes.filter((n) => n.online && n.cpu !== null && n.cpu >= 80).length
 
   return (
     <div className="mp-app">
@@ -29,7 +29,7 @@ export function App() {
               {nodes.length > online ? (
                 <>
                   {" · "}
-                  <span className="mp-offline">停机 {nodes.length - online}</span>
+                  <span className="mp-offline">离线 {nodes.length - online}</span>
                 </>
               ) : null}
             </div>
@@ -48,15 +48,19 @@ export function App() {
           </span>
           <span>
             <i data-tone="warn" />
-            CPU ≥ 75%
+            CPU ≥ 80%
           </span>
           <span>
             <i data-tone="bad" />
-            CPU ≥ 90%
+            CPU ≥ 92%
+          </span>
+          <span>
+            <i data-tone="bad" />
+            离线
           </span>
           <span>
             <i data-tone="off" />
-            停机
+            待接入
           </span>
           <span>
             <i data-tone="idle" />

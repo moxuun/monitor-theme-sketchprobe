@@ -32,12 +32,15 @@ type Tone = "ok" | "warn" | "bad" | "off" | "idle"
 const RANK: Record<Tone, number> = { bad: 4, warn: 3, off: 2, ok: 1, idle: 0 }
 
 function toneOf(n: MapNode): Tone {
-  // Offline is grey, and red is kept for an online node at the CPU ceiling.
-  // A node that has gone quiet and a node that is overloaded are two different
-  // things, so they do not share a colour.
-  if (!n.online) return "off"
+  // Offline wears the card's own tone rather than a grey of its own: a node that
+  // is red in the list and grey on the map is one node saying two things. `off`
+  // is kept for the one case the cards also give it -- a node that has never
+  // reported, which is waiting to be connected rather than down.
+  if (!n.online) return n.cpu === null ? "off" : "bad"
   if (n.cpu === null) return "idle"
-  return n.cpu >= 90 ? "bad" : n.cpu >= 75 ? "warn" : "ok"
+  // The meters' own thresholds, so a marker turns amber on the same reading the
+  // bar beside the node's name does.
+  return n.cpu >= 92 ? "bad" : n.cpu >= 80 ? "warn" : "ok"
 }
 
 /** A country's nodes, and where on the map that country sits. */
@@ -533,7 +536,7 @@ export function WorldMap({ nodes, onOpen }: { nodes: MapNode[]; onOpen?: (id: nu
                 </g>
               )
             })}
-            {w > 380 ? <Compass x={w - 46} y={h - 52} seed={seedOf("compass")} /> : null}
+            {w > 380 ? <Compass x={46} y={h - 52} seed={seedOf("compass")} /> : null}
           </g>
 
           <g className="mp-frame">

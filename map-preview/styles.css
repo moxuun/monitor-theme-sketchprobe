@@ -8,43 +8,55 @@
  */
 
 /*
- * Cabin Sketch, a sketched slab serif. OFL-1.1, self-hosted. A place name on a
- * hand-drawn map is lettered, not stuck on: a continent name set in the body
- * sans reads as a UI label that happens to sit on the paper, which is exactly
- * what the map is trying not to be. Esri's Colored Pencil basemap lettered its
- * names the same way, with a rough serif rather than a clean one.
+ * Excalifont, the theme's own hand: OFL-1.1, self-hosted, the same file the
+ * shell loads. A place name on a hand-drawn map is lettered, not stuck on, and
+ * a continent name set in the body sans reads as a UI label that happens to sit
+ * on the paper -- which is exactly what the map is trying not to be. Taking the
+ * theme's font rather than one of the prototype's own is what keeps the two
+ * pages lettered by the same hand.
  */
 @font-face {
-  font-family: "Cabin Sketch";
-  src: url("./fonts/CabinSketch-Regular.woff2") format("woff2");
+  font-family: "Excalifont";
+  src: url("./fonts/Excalifont-Regular.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 
+/* Mirrors the theme's own tokens in src/index.css: paper and ink, the coloured
+   pencil, and the map's two grounds. This page is standalone and inherits
+   nothing from the theme, so the values are copied rather than referenced --
+   when the theme's palette moves, this block moves with it. */
 :root {
-  --mp-desk: #ddd4c0;
-  --mp-paper: #f6f1e4;
-  --mp-paper-2: #ece5d3;
-  --mp-ink: #35322c;
-  --mp-ink-soft: #6f6759;
-  --mp-ink-faint: #9c9484;
-  --mp-rule: #cbc1a9;
-  --mp-land: #e8ddc6;
-  --mp-land-2: #d9cbac;
+  --mp-desk: #f5f1e6;
+  --mp-paper: #fcfaf4;
+  --mp-paper-2: #f5f1e6;
+  --mp-ink: #2a2721;
+  --mp-ink-soft: #56524a;
+  --mp-ink-faint: #857f73;
+  --mp-rule: #cabfa9;
+  /* The theme's own ruling: the same 22px blue-grey grid its shell is drawn on,
+     so the sheet here and the page there are the same paper. */
+  --mp-grid: rgba(92, 114, 142, 0.15);
+  /* Both grounds are washes rather than fills, so the sheet's grain keeps
+     showing through the pencil. The sea and the land are told apart by
+     temperature and by weight of pencil, not by one of them being solid. */
+  --mp-land: rgba(198, 174, 126, 0.55);
   --mp-land-ink: #93805a;
-  --mp-coast: #7f7462;
-  --mp-ocean: #eff5f5;
-  --mp-ocean-2: #e0ecee;
+  --mp-coast: #6b6053;
+  --mp-ocean: color-mix(in srgb, var(--mp-accent) 10%, transparent);
   --mp-ocean-ink: #7ba3b0;
-  --mp-accent: #2f6f6b;
-  --mp-ok: #4b8f57;
-  --mp-warn: #c8871f;
-  --mp-bad: #bd5340;
-  --mp-idle: #8d8578;
-  --mp-font: "LXGW WenKai", "Kaiti SC", "KaiTi", "STKaiti", "Segoe Print", ui-rounded, system-ui, sans-serif;
-  --mp-font-hand: "Cabin Sketch", "LXGW WenKai", "Kaiti SC", "KaiTi", "STKaiti", ui-rounded, system-ui, sans-serif;
-  --mp-font-data: "JetBrainsMono NF", "JetBrainsMono Nerd Font", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --mp-accent: #4e7ca1;
+  --mp-ok: #6e8f5a;
+  --mp-warn: #bd8a2c;
+  --mp-bad: #b8523c;
+  /* Two greys, as the theme has: `off` is the muted one, `idle` the faint one,
+     and the dot inside is what tells them apart. */
+  --mp-idle: #857f73;
+  --mp-faint: #b0a99a;
+  --mp-font: "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  --mp-font-hand: "Excalifont", "LXGW WenKai", "Kaiti SC", "KaiTi", "STKaiti", "TW-Kai", "Noto Serif SC", ui-serif, serif;
+  --mp-font-data: ui-monospace, "SF Mono", "JetBrains Mono", "Maple Mono NF CN", Menlo, Consolas, monospace;
 }
 
 * {
@@ -86,10 +98,9 @@ body {
   border-radius: 6px;
   padding: 18px 20px 20px;
   background-color: var(--mp-paper);
-  background-image:
-    repeating-linear-gradient(0deg, rgba(160, 140, 100, 0.055) 0 1px, rgba(0, 0, 0, 0) 1px 4px),
-    repeating-linear-gradient(90deg, rgba(160, 140, 100, 0.045) 0 1px, rgba(0, 0, 0, 0) 1px 5px),
-    radial-gradient(140% 120% at 8% -20%, rgba(255, 255, 255, 0.75) 0%, rgba(0, 0, 0, 0) 55%);
+  background-image: linear-gradient(var(--mp-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mp-grid) 1px, transparent 1px);
+  background-size: 22px 22px;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.6) inset,
     0 14px 30px -18px rgba(60, 48, 28, 0.45),
@@ -137,7 +148,7 @@ body {
 }
 
 .mp-stamp .mp-offline {
-  color: var(--mp-idle);
+  color: var(--mp-bad);
 }
 
 /* ---- the map ------------------------------------------------------------ */
@@ -191,7 +202,7 @@ body {
 .mp-land path {
   fill: url(#mp-land);
   stroke: var(--mp-coast);
-  stroke-width: 0.9;
+  stroke-width: 1.2;
   stroke-linejoin: round;
 }
 
@@ -242,13 +253,13 @@ body {
 }
 
 .mp-compass path {
-  color: var(--mp-ink-soft);
+  color: var(--mp-ink-faint);
 }
 
 .mp-compass-n {
-  font-family: var(--mp-font);
+  font-family: var(--mp-font-hand);
   font-size: 11px;
-  fill: var(--mp-ink-soft);
+  fill: var(--mp-ink-faint);
 }
 
 /* fill-box so the ring grows about the spot it circles rather than about the
@@ -289,7 +300,7 @@ body {
 }
 
 .mp-mark[data-tone="idle"] {
-  color: var(--mp-idle);
+  color: var(--mp-faint);
 }
 
 .mp-mark[data-tone="ok"] .mp-dot {
@@ -311,7 +322,7 @@ body {
 
 .mp-mark[data-tone="idle"] .mp-dot {
   fill: var(--mp-paper);
-  stroke: var(--mp-idle);
+  stroke: var(--mp-faint);
   stroke-width: 1.6;
 }
 
@@ -591,7 +602,7 @@ body {
 
 .mp-legend i[data-tone="idle"] {
   background: var(--mp-paper);
-  border: 1.5px solid var(--mp-idle);
+  border: 1.5px solid var(--mp-faint);
 }
 
 .mp-legend .mp-legend-note {
@@ -655,25 +666,25 @@ body {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --mp-desk: #26231e;
-    --mp-paper: #302c25;
-    --mp-paper-2: #3a352c;
-    --mp-ink: #e6dfcf;
-    --mp-ink-soft: #b3a992;
-    --mp-ink-faint: #8b8271;
-    --mp-rule: #554d3f;
-    --mp-land: #3b3629;
-    --mp-land-2: #453f30;
+    --mp-desk: #1d1c19;
+    --mp-paper: #252420;
+    --mp-paper-2: #252420;
+    --mp-ink: #ece6d9;
+    --mp-ink-soft: #c2bbac;
+    --mp-ink-faint: #938c7d;
+    --mp-rule: #474339;
+    --mp-grid: rgba(205, 219, 238, 0.075);
+    --mp-land: rgba(110, 98, 68, 0.32);
     --mp-land-ink: #9a8b6a;
-    --mp-coast: #8e836c;
-    --mp-ocean: #23282a;
-    --mp-ocean-2: #2b3335;
+    --mp-coast: #a2967e;
+    --mp-ocean: color-mix(in srgb, var(--mp-accent) 12%, transparent);
     --mp-ocean-ink: #5b8b9a;
-    --mp-accent: #7fc0b8;
-    --mp-ok: #74b880;
-    --mp-warn: #dda94f;
-    --mp-bad: #dd7d68;
-    --mp-idle: #8b8271;
+    --mp-accent: #7fa8cc;
+    --mp-ok: #90b676;
+    --mp-warn: #dfad55;
+    --mp-bad: #d8765c;
+    --mp-idle: #938c7d;
+    --mp-faint: #6b6559;
   }
 
   body {
@@ -684,13 +695,8 @@ body {
   }
 
   .mp-sheet {
-    /* Same grain, but the highlight that sells a lit sheet has to be a sheen on
-       dark paper rather than the white wash light mode paints with. Without
-       this the sheet keeps the white radial and reads as grey, not as paper. */
-    background-image:
-      repeating-linear-gradient(0deg, rgba(214, 190, 146, 0.045) 0 1px, rgba(0, 0, 0, 0) 1px 4px),
-      repeating-linear-gradient(90deg, rgba(214, 190, 146, 0.035) 0 1px, rgba(0, 0, 0, 0) 1px 5px),
-      radial-gradient(140% 120% at 8% -20%, rgba(255, 246, 226, 0.07) 0%, rgba(0, 0, 0, 0) 55%);
+    /* The ruling is a token and comes across on its own; only the light the sheet
+       sits in has to change. */
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.05) inset,
       0 14px 30px -18px rgba(0, 0, 0, 0.8);
