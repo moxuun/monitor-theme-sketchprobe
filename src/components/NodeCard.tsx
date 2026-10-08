@@ -15,7 +15,12 @@ export function NodeCard({ node }: { node: Node }) {
   const trafficPct = percent(node.month_used ?? 0, node.traffic_limit)
 
   return (
-    <SketchBox className="card" seedKey={`card-${node.id}`} radius={11} fill="var(--hatch)">
+    <SketchBox
+      className="card"
+      seedKey={`card-${node.id}`}
+      radius={11}
+      fill={status.tone === "bad" ? "var(--bad)" : status.tone === "off" ? "var(--muted)" : "var(--hatch)"}
+    >
       {/* A real anchor over the whole card rather than a click handler on the
           box: it is reachable by keyboard and announced as a link, and a middle
           or modified click opens the node in its own tab. */}
