@@ -125,6 +125,19 @@ const PATHS = {
     "M5.75 2.35v3.1",
     "M10.25 2.3v3.15",
   ],
+  // Stacked platform layers, for architecture and virtualization: a top surface
+  // and the layer under it. Deliberately two layers rather than three -- at 13px
+  // three leaves no space between strokes and fills in as a solid polygon.
+  layers: [
+    "M8 2.85 13.5 5.85 8 8.85 2.5 5.85Z",
+    "M2.5 9.45 8 12.45 13.5 9.45",
+  ],
+  // A terminal window with a prompt, for the operating system kernel.
+  terminal: [
+    "M2.8 3.5h10.4c.5 0 .9.4 .9.9v7.2c0 .5-.4.9-.9.9H2.8c-.5 0-.9-.4-.9-.9V4.4c0-.5.4-.9 .9-.9Z",
+    "M4.8 6.5 6.8 8 4.8 9.5",
+    "M8.2 9.5h2.8",
+  ],
 } as const
 
 /**

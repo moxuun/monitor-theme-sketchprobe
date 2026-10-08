@@ -7,6 +7,7 @@ import { Badge } from "@/components/Badge"
 import { Flag } from "@/components/Flag"
 import { Icon } from "@/components/Icon"
 import { Meter } from "@/components/Meter"
+import { OsIcon } from "@/components/OsIcon"
 import { SketchBox } from "@/sketch/Sketch"
 
 export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResult }) {
@@ -32,6 +33,7 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
       <div className="card-head">
         <Flag country={node.country} className="card-flag" />
         <span className="card-name">{node.name}</span>
+        {node.os ? <OsIcon os={node.os} className="card-os" /> : null}
         <span className="spacer" />
         {expiry ? <Badge tone={expiry.tone}>{expiry.text}</Badge> : null}
         <Badge tone={status.tone} dot={status.dot}>

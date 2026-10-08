@@ -24,6 +24,7 @@ import { ResourceChart } from "@/components/Chart"
 import { Flag } from "@/components/Flag"
 import { Icon, type IconName } from "@/components/Icon"
 import { Meter } from "@/components/Meter"
+import { OsIcon } from "@/components/OsIcon"
 import { SketchBox, SketchRing } from "@/sketch/Sketch"
 
 function Fact({ label, children, hand }: { label: ReactNode; children: ReactNode; hand?: boolean }) {
@@ -78,7 +79,10 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
         <div className="detail-title">
           <Flag country={node.country} className="detail-flag" />
           <div>
-            <h1>{node.name}</h1>
+            <div className="detail-name-row">
+              <h1>{node.name}</h1>
+              {node.os ? <OsIcon os={node.os} className="detail-os" /> : null}
+            </div>
             <div className="row tiny muted">
               <span>{node.group || "未分组"}</span>
               <span>·</span>
@@ -134,8 +138,26 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
       ) : null}
 
       <SketchBox className="facts" seedKey={`facts-${node.id}`} radius={10}>
-        <Fact label="内核">{node.kernel || "—"}</Fact>
-        <Fact label="架构">{node.arch ? `${node.arch} · ${node.virt}` : "—"}</Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="terminal" size={13} />
+              内核
+            </span>
+          }
+        >
+          {node.kernel || "—"}
+        </Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="layers" size={13} />
+              架构
+            </span>
+          }
+        >
+          {node.arch ? `${node.arch} · ${node.virt}` : "—"}
+        </Fact>
         <Fact
           label={
             <span className="with-icon">
@@ -147,11 +169,56 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
         >
           {node.cpu_name ? `${cpuName(node.cpu_name)} · ${node.cpu_cores} 核` : "—"}
         </Fact>
-        <Fact label="内存">{node.mem_total ? bytes(node.mem_total) : "—"}</Fact>
-        <Fact label="磁盘">{node.disk_total ? bytes(node.disk_total) : "—"}</Fact>
-        <Fact label="探针">{node.agent_version || "—"}</Fact>
-        <Fact label="最后上报">{node.online ? "刚刚" : node.last_seen_ago ? `${ago(node.last_seen_ago)}前` : "—"}</Fact>
-        <Fact label="本月流量">{node.traffic_limit > 0 ? pair(node.month_used ?? 0, node.traffic_limit) : "不限"}</Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="ram" size={13} />
+              内存
+            </span>
+          }
+        >
+          {node.mem_total ? bytes(node.mem_total) : "—"}
+        </Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="disk" size={13} />
+              磁盘
+            </span>
+          }
+        >
+          {node.disk_total ? bytes(node.disk_total) : "—"}
+        </Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="probe" size={13} />
+              探针
+            </span>
+          }
+        >
+          {node.agent_version || "—"}
+        </Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="clock" size={13} />
+              最后上报
+            </span>
+          }
+        >
+          {node.online ? "刚刚" : node.last_seen_ago ? `${ago(node.last_seen_ago)}前` : "—"}
+        </Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="network" size={13} />
+              本月流量
+            </span>
+          }
+        >
+          {node.traffic_limit > 0 ? pair(node.month_used ?? 0, node.traffic_limit) : "不限"}
+        </Fact>
         <Fact label="流量上限">{node.traffic_limit > 0 ? bytes(node.traffic_limit) : FOREVER}</Fact>
         <Fact label="累计流量">{bytes(node.total_rx + node.total_tx)}</Fact>
         <Fact label="计费">
