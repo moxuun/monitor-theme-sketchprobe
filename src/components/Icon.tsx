@@ -100,6 +100,31 @@ const PATHS = {
     "M8 11.9c1.05-1.25 2.1-2.55 3.15-3.85",
     "M8 11.35c.3-.02.55.22.53.52-.02.3-.25.5-.53.5-.3.02-.55-.22-.53-.52.02-.3.25-.5.53-.5Z",
   ],
+  // A speech bubble with its tail on the bottom edge and one line of writing:
+  // the mark for an operator's note, not for the words of the note.
+  comment: [
+    "M3.85 3.15h8.3c.55 0 .95.4 .95.95v5.4c0 .55-.4 .95-.95 .95H8.35c-.3 0-.55.15-.72.4l-.83 1.12c-.22.3-.57.2-.57-.2v-1.32H3.85c-.55 0-.95-.4-.95-.95V4.1c0-.55.4-.95 .95-.95Z",
+    "M5.35 6.5c1.8-.05 3.6-.05 5.4 0",
+  ],
+  // A processor: the die as a square with pins on two sides. The pins are 2.5
+  // units long on purpose -- shorter than that and they are the same width as
+  // the stroke, so at 13px the chip reads as a plain box. No inner square
+  // either: a second outline inside a 7-unit body closes up into a solid dot.
+  chip: [
+    "M4.85 4.7h5.6c.5 0 .9.4 .9.9v5.9c0 .5-.4.9-.9.9H4.85c-.5 0-.9-.4-.9-.9V5.6c0-.5.4-.9 .9-.9Z",
+    "M1.45 7.05h2.5",
+    "M11.35 7.15h2.5",
+    "M1.45 9.95h2.5",
+    "M11.35 10.05h2.5",
+  ],
+  // A calendar: the page, the header rule, and two binding stubs crossing the
+  // top edge.
+  calendar: [
+    "M3.15 3.85h9.7c.5 0 .9.4 .9.9v7.8c0 .5-.4.9-.9.9H3.15c-.5 0-.9-.4-.9-.9V4.75c0-.5.4-.9 .9-.9Z",
+    "M2.35 6.75c3.8-.05 7.6-.05 11.4 0",
+    "M5.75 2.35v3.1",
+    "M10.25 2.3v3.15",
+  ],
 } as const
 
 /**

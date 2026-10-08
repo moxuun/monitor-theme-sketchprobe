@@ -33,7 +33,12 @@ export function NodeCard({ node }: { node: Node }) {
         </Badge>
       </div>
 
-      {node.public_remark ? <div className="card-remark">{node.public_remark}</div> : null}
+      {node.public_remark ? (
+        <div className="card-remark">
+          <Icon name="comment" size={12} className="mark-inline" />
+          {node.public_remark}
+        </div>
+      ) : null}
 
       {m ? (
         <div className="card-meters">
