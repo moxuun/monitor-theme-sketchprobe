@@ -14,7 +14,7 @@ export function ago(seconds: number): string {
 }
 
 export type Status = {
-  tone: "ok" | "warn" | "bad" | "off"
+  tone: "ok" | "off"
   text: string
   dot: boolean
   /**
@@ -32,7 +32,9 @@ export function statusOf(node: Node): Status {
   // A node that has never reported has no interval to report: it is waiting to
   // be connected, not down, and "离线 0 秒" would say neither.
   if (node.last_seen_ago === null || gone <= 0) return { tone: "off", text: "待接入", dot: false, mark: "probe" }
-  return { tone: "bad", text: `离线 ${ago(gone)}`, dot: false, mark: "timeout" }
+  // Grey, like the state above: the red this theme has is spent on the readings
+  // someone can act on, and the mark and the word already carry the difference.
+  return { tone: "off", text: `离线 ${ago(gone)}`, dot: false, mark: "timeout" }
 }
 
 /**

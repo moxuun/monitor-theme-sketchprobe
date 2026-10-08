@@ -24,7 +24,7 @@ const RANK: Record<Tone, number> = { bad: 4, warn: 3, off: 2, ok: 1, idle: 0 }
  * four it has.
  */
 function toneOf(node: Node): Tone {
-  if (!node.online) return statusOf(node).tone === "off" ? "off" : "bad"
+  if (!node.online) return "off"
   const cpu = node.metrics?.cpu
   if (cpu === undefined || cpu === null) return "idle"
   // The meters' own thresholds, so a marker turns amber on the same reading the
