@@ -130,11 +130,11 @@ export function App() {
       <div className="shell">
         <header className="topbar">
           <div className="brand">
-            <div className="brand-mark">
+            {/* The title is the most obvious way home, so it has to be one. */}
+            <Link className="brand-mark" href="/">
               {me?.site_name || "Monitor"}
               <SketchRule className="brand-rule" seedKey="brand" />
-            </div>
-            <span className="brand-sub">手绘工程草图</span>
+            </Link>
           </div>
           <nav className="nav">
             <Link className="nav-item" href="/" aria-current={openId === null ? "page" : undefined}>
@@ -153,6 +153,14 @@ export function App() {
             >
               <Icon name={theme === "dark" ? "sun" : "moon"} />
             </button>
+            {/* The node page's way back sits at the far right of the bar, not
+                buried in the detail card, where it read as one more chip. */}
+            {openId !== null ? (
+              <Link className="nav-item with-icon" href="/">
+                <Icon name="back" size={12} />
+                节点列表
+              </Link>
+            ) : null}
           </nav>
         </header>
 

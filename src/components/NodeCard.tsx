@@ -27,6 +27,7 @@ export function NodeCard({ node }: { node: Node }) {
         <Flag country={node.country} className="card-flag" />
         <span className="card-name">{node.name}</span>
         <span className="spacer" />
+        {expiry ? <Badge tone={expiry.tone}>{expiry.text}</Badge> : null}
         <Badge tone={status.tone} dot={status.dot}>
           {status.mark ? <Icon name={status.mark} size={12} /> : null}
           {status.text}
@@ -83,7 +84,7 @@ export function NodeCard({ node }: { node: Node }) {
           // the row never has a side that is blank for no reason.
           <span className="tiny">{node.group || "未分组"}</span>
         )}
-        {expiry ? <Badge tone={expiry.tone}>{expiry.text}</Badge> : m ? <span className="tiny">{node.group || "未分组"}</span> : null}
+        {m ? <span className="tiny">{node.group || "未分组"}</span> : null}
       </div>
     </SketchBox>
   )

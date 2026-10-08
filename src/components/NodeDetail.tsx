@@ -19,7 +19,6 @@ import {
   windows,
 } from "@/lib/format"
 import { useMetrics } from "@/lib/history"
-import { Link } from "@/lib/route"
 import { Badge } from "@/components/Badge"
 import { ResourceChart } from "@/components/Chart"
 import { Flag } from "@/components/Flag"
@@ -93,9 +92,6 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
             {status.text}
           </Badge>
           {m ? <Badge tone="off">已运行 {uptime(m.uptime)}</Badge> : null}
-          <Link className="icon-btn" href="/" title="返回节点列表">
-            <Icon name="back" />
-          </Link>
         </div>
       </SketchBox>
 
