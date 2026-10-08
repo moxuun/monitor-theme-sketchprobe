@@ -31,12 +31,32 @@ function Spark({ series }: { series: { rx: number; tx: number }[] }) {
   )
 }
 
-function Tile({ label, children, note, seedKey }: { label: string; children: React.ReactNode; note?: React.ReactNode; seedKey: string }) {
+function Tile({ label, children, note, foot, seedKey }: { label: string; children: React.ReactNode; note?: React.ReactNode; foot?: React.ReactNode; seedKey: string }) {
   return (
     <SketchBox className="tile" seedKey={seedKey} radius={10}>
       <div className="label">{label}</div>
       <div className="tile-value">{children}</div>
       {note ? <div className="tile-note">{note}</div> : null}
+      {foot ?? null}
+    </SketchBox>
+  )
+}
+
+/**
+ * A sketch of the node set: two servers and an ellipsis in a dashed pen box.
+ *
+ * It says "nodes, and more of them" and deliberately is not a count -- the
+ * figure above it is the count. Two marks and an ellipsis rather than one per
+ * node, so a full fleet and a nearly empty one draw the same sketch.
+ */
+function NodeSketch() {
+  return (
+    <SketchBox className="node-sketch" seedKey="sum-nodes-sketch" radius={5} dashed stroke="var(--rule)" strokeWidth={1.2}>
+      <Icon name="server" size={12} />
+      <Icon name="server" size={12} />
+      <span className="node-sketch-more" aria-hidden="true">
+        …
+      </span>
     </SketchBox>
   )
 }
@@ -60,6 +80,7 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
       <Tile
         label="节点"
         seedKey="sum-nodes"
+        foot={<NodeSketch />}
         note={
           <span className="with-icon">
             <Icon name="bracket" size={13} />

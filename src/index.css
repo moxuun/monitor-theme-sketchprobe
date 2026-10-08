@@ -448,6 +448,23 @@ img {
   text-overflow: ellipsis;
 }
 
+/* A sketch of the node set, in the blank the tallest tile of the row leaves
+   under this one. Decoration: the figure above it is the count. */
+.node-sketch {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+  padding: 3px 7px;
+  color: var(--muted);
+}
+
+.node-sketch-more {
+  font-family: var(--font-hand);
+  font-size: 13px;
+  line-height: 1;
+}
+
 .spark {
   position: relative;
   height: 26px;
@@ -543,10 +560,19 @@ img {
   white-space: nowrap;
 }
 
+/* The remark as a small annotation: a dashed pen box over a patch of clean
+   paper, which is what sets it apart from the card's own shading. The ellipsis
+   is on the text inside rather than on the box, so the frame is never clipped. */
 .card-remark {
+  margin-top: 7px;
+  padding: 3px 8px;
+  background: var(--paper-2);
   font-size: 12px;
   color: var(--muted);
-  margin-top: 7px;
+}
+
+.card-remark-text {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

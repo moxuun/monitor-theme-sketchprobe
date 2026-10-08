@@ -96,8 +96,8 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
       </SketchBox>
 
       {node.public_remark ? (
-        <SketchBox className="notice" seedKey={`remark-${node.id}`}>
-          <Icon name="comment" size={13} className="mark-inline" />
+        <SketchBox className="notice" seedKey={`remark-${node.id}`} dashed stroke="var(--rule)" strokeWidth={1.2}>
+          <Icon name="comment" size={15} className="mark-inline" />
           {node.public_remark}
         </SketchBox>
       ) : null}
