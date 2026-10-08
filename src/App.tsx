@@ -7,6 +7,7 @@ import { Icon } from "@/components/Icon"
 import { NodeCard } from "@/components/NodeCard"
 import { NodeDetail } from "@/components/NodeDetail"
 import { Summary } from "@/components/Summary"
+import { WorldMap } from "@/map/WorldMap"
 import { SketchBox, SketchProvider, SketchRing, SketchRule } from "@/sketch/Sketch"
 
 type Me = { authed: boolean; github: boolean; site_name: string; public_page: boolean; history_days: number }
@@ -195,6 +196,11 @@ export function App() {
         ) : (
           <div className="stack">
             {showSummary ? <Summary nodes={shown} group={group} /> : null}
+
+            {/* Scoped to the tab, like the tiles above it: the whole page is
+                showing one group, and a map still showing the fleet would
+                contradict the cards underneath it. */}
+            <WorldMap nodes={shown} />
 
             {tabs.length > 2 ? (
               <div className="tabs">
