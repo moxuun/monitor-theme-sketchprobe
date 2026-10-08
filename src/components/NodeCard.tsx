@@ -33,11 +33,16 @@ export function NodeCard({ node }: { node: Node }) {
         </Badge>
       </div>
 
+      {/* A remark is an annotation, so it is drawn as one: a dashed pen box on
+          a patch of clean paper rather than a line of grey text. The ellipsis
+          stays on the text inside, so the frame is never clipped. */}
       {node.public_remark ? (
-        <div className="card-remark">
-          <Icon name="comment" size={12} className="mark-inline" />
-          {node.public_remark}
-        </div>
+        <SketchBox className="card-remark" seedKey={`card-remark-${node.id}`} radius={7} dashed stroke="var(--rule)" strokeWidth={1.2}>
+          <span className="card-remark-text">
+            <Icon name="comment" size={14} className="mark-inline" />
+            {node.public_remark}
+          </span>
+        </SketchBox>
       ) : null}
 
       {m ? (
