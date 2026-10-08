@@ -39,10 +39,10 @@ export function frame(gen: RoughGenerator, w: number, h: number, o: FrameOpts): 
   // is worth its extra paths on a panel-sized area, which is the only place this
   // is called with a fill. The gap is set from the card rather than from the
   // default: a panel is large enough that the 6 px a meter wants reads as a
-  // dense weave, and the lines have to stay far enough apart to look drawn one
-  // at a time.
+  // dense weave, and at 11 px the lines stay far enough apart to read as strokes
+  // drawn one at a time rather than as a woven texture.
   return o.fill
-    ? gen.path(d, pencilOptions(o.factor, { ...common, fill: o.fill, hachureGap: 7.5, fillWeight: 1.4 }))
+    ? gen.path(d, pencilOptions(o.factor, { ...common, fill: o.fill, hachureGap: 11, fillWeight: 1.4 }))
     : gen.path(d, inkOptions(o.factor, common))
 }
 
