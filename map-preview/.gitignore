@@ -1,0 +1,3 @@
+# Natural Earth sources downloaded by build-world.mjs. Rerun the script to
+# fetch them again; they are inputs to the build, never part of the output.
+.cache/

@@ -1,0 +1,648 @@
+/*
+ * SketchProbe map prototype.
+ *
+ * Everything here is scoped to .mp- so the file can be dropped into the theme
+ * beside its own stylesheet without a selector collision. Colour lives in
+ * variables only: the drawing is `currentColor` throughout, so a dark palette
+ * is a variable swap and nothing has to be redrawn.
+ */
+
+:root {
+  --mp-desk: #ddd4c0;
+  --mp-paper: #f6f1e4;
+  --mp-paper-2: #ece5d3;
+  --mp-ink: #35322c;
+  --mp-ink-soft: #6f6759;
+  --mp-ink-faint: #9c9484;
+  --mp-rule: #cbc1a9;
+  --mp-land: #e8ddc6;
+  --mp-land-2: #d9cbac;
+  --mp-land-ink: #93805a;
+  --mp-coast: #7f7462;
+  --mp-ocean: #eff5f5;
+  --mp-ocean-2: #e0ecee;
+  --mp-ocean-ink: #7ba3b0;
+  --mp-accent: #2f6f6b;
+  --mp-ok: #4b8f57;
+  --mp-warn: #c8871f;
+  --mp-bad: #bd5340;
+  --mp-idle: #8d8578;
+  --mp-font: "LXGW WenKai", "Kaiti SC", "KaiTi", "STKaiti", "Segoe Print", ui-rounded, system-ui, sans-serif;
+  --mp-font-data: "JetBrainsMono NF", "JetBrainsMono Nerd Font", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--mp-font);
+  color: var(--mp-ink);
+  background-color: var(--mp-desk);
+  /* A desk the sheet of paper is lying on: one slow wash and a fine grain,
+     both quiet enough to sit under the sheet without competing with it. */
+  background-image:
+    repeating-linear-gradient(58deg, rgba(255, 255, 255, 0.16) 0 3px, rgba(0, 0, 0, 0) 3px 11px),
+    radial-gradient(120% 90% at 12% -10%, #f2ecdd 0%, rgba(0, 0, 0, 0) 60%),
+    linear-gradient(165deg, #e4dbc7 0%, #d6ccb6 100%);
+}
+
+.mp-app {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 26px 18px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---- the sheet ---------------------------------------------------------- */
+
+.mp-sheet {
+  position: relative;
+  border-radius: 6px;
+  padding: 18px 20px 20px;
+  background-color: var(--mp-paper);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(160, 140, 100, 0.055) 0 1px, rgba(0, 0, 0, 0) 1px 4px),
+    repeating-linear-gradient(90deg, rgba(160, 140, 100, 0.045) 0 1px, rgba(0, 0, 0, 0) 1px 5px),
+    radial-gradient(140% 120% at 8% -20%, rgba(255, 255, 255, 0.75) 0%, rgba(0, 0, 0, 0) 55%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 14px 30px -18px rgba(60, 48, 28, 0.45),
+    0 2px 5px rgba(60, 48, 28, 0.12);
+}
+
+.mp-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 14px;
+}
+
+.mp-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.mp-title small {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--mp-ink-soft);
+  letter-spacing: 0.04em;
+  margin-top: 3px;
+}
+
+.mp-stamp {
+  margin-left: auto;
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--mp-ink-soft);
+  line-height: 1.5;
+}
+
+.mp-stamp b {
+  font-family: var(--mp-font-data);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mp-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.mp-stamp .mp-offline {
+  color: var(--mp-idle);
+}
+
+/* ---- the map ------------------------------------------------------------ */
+
+.mp-map-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mp-map {
+  position: relative;
+  aspect-ratio: 1000 / 389;
+  width: 100%;
+  cursor: grab;
+  /* The map handles its own drags: without this a touch drag scrolls the page
+     out from under the pointer instead. */
+  touch-action: none;
+  /* Dragging a map must not select its labels. Once text is selected the next
+     press-and-drag starts a native drag, which cancels the pointer and leaves
+     the map half-panned. */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mp-map[data-panning="1"] {
+  cursor: grabbing;
+}
+
+.mp-map:focus-visible {
+  outline: 2px dashed var(--mp-accent);
+  outline-offset: 3px;
+}
+
+.mp-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Clips the map group to the viewport: zooming in moves the window over the
+     drawing, and the drawing outside it must not paint over the header. */
+  overflow: hidden;
+  color: var(--mp-ink);
+  /* The sea's ground is the element rather than the tile: the world repeats
+     east-west, so the ocean is drawn twice at the seam, and a ground inside the
+     tile would double up there into a visible band. */
+  background-color: var(--mp-ocean);
+}
+
+/* The pencil tile, not a flat colour: the ground is inside the pattern so a
+   whole country can be one path. */
+.mp-land path {
+  fill: url(#mp-land);
+  stroke: var(--mp-coast);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+
+.mp-grat line {
+  stroke: var(--mp-rule);
+  stroke-width: 0.7;
+  stroke-dasharray: 3 4;
+  opacity: 0.75;
+}
+
+.mp-grat line.mp-grat-main {
+  stroke-dasharray: 7 4;
+  opacity: 0.95;
+}
+
+.mp-compass path {
+  color: var(--mp-ink-soft);
+}
+
+.mp-compass-n {
+  font-family: var(--mp-font);
+  font-size: 11px;
+  fill: var(--mp-ink-soft);
+}
+
+/* fill-box so the ring grows about the spot it circles rather than about the
+   corner of the map, and so a marker does not need redrawing to change size --
+   the rough path is generated once and CSS does the rest. */
+.mp-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 120ms ease-out;
+}
+
+.mp-mark[data-on="1"] .mp-ring {
+  transform: scale(1.3);
+}
+
+.mp-mark path {
+  stroke-linecap: round;
+}
+
+.mp-mark .mp-dot {
+  stroke: none;
+}
+
+.mp-mark[data-tone="ok"] {
+  color: var(--mp-ok);
+}
+
+.mp-mark[data-tone="warn"] {
+  color: var(--mp-warn);
+}
+
+.mp-mark[data-tone="bad"] {
+  color: var(--mp-bad);
+}
+
+.mp-mark[data-tone="off"] {
+  color: var(--mp-idle);
+}
+
+.mp-mark[data-tone="idle"] {
+  color: var(--mp-idle);
+}
+
+.mp-mark[data-tone="ok"] .mp-dot {
+  fill: var(--mp-ok);
+}
+
+.mp-mark[data-tone="warn"] .mp-dot {
+  fill: var(--mp-warn);
+}
+
+.mp-mark[data-tone="bad"] .mp-dot {
+  fill: var(--mp-bad);
+}
+
+/* 停机: solid, so it reads apart from the hollow "online but silent" dot. */
+.mp-mark[data-tone="off"] .mp-dot {
+  fill: var(--mp-idle);
+}
+
+.mp-mark[data-tone="idle"] .mp-dot {
+  fill: var(--mp-paper);
+  stroke: var(--mp-idle);
+  stroke-width: 1.6;
+}
+
+.mp-count {
+  font-family: var(--mp-font-data);
+  font-size: 9px;
+  font-weight: 600;
+  fill: var(--mp-paper);
+  pointer-events: none;
+}
+
+.mp-mark[data-tone="idle"] .mp-count {
+  fill: var(--mp-ink-soft);
+}
+
+/* ---- markers as real controls ------------------------------------------- */
+
+.mp-hits {
+  position: absolute;
+  inset: 0;
+  /* Markers outside the viewport are skipped, but the ones half over the edge
+     still have a button wider than they are: without this it would reach past
+     the map and sit over the header. */
+  overflow: hidden;
+}
+
+.mp-hit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  /* Centred on its point by the margin, then moved by transform: panning
+     changes a transform, which is not a layout. */
+  margin: -15px 0 0 -15px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mp-hit:focus-visible {
+  outline: 2px dashed var(--mp-accent);
+  outline-offset: 3px;
+}
+
+.mp-tip {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -100%) translateY(-13px);
+  padding: 5px 9px 6px;
+  border-radius: 3px;
+  background: var(--mp-paper);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 5px 14px -6px rgba(50, 40, 20, 0.5);
+  font-size: 12.5px;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.mp-tip[data-side="below"] {
+  transform: translate(-50%, 0) translateY(13px);
+}
+
+.mp-tip b {
+  font-weight: 600;
+  margin-right: 7px;
+}
+
+.mp-tip span {
+  color: var(--mp-ink-soft);
+}
+
+/* ---- zoom ---------------------------------------------------------------- */
+
+.mp-zoom {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  /* Only the buttons take the pointer, so a drag that starts between them
+     still pans the map. */
+  pointer-events: none;
+}
+
+.mp-zoom button {
+  pointer-events: auto;
+  width: 30px;
+  height: 27px;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--mp-ink);
+  background: var(--mp-paper);
+  border: 1.4px solid var(--mp-ink-soft);
+  border-radius: 8px 10px 8px 11px / 10px 8px 11px 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mp-zoom button:hover:not(:disabled) {
+  background: var(--mp-paper-2);
+}
+
+.mp-zoom button:focus-visible {
+  outline: 2px dashed var(--mp-accent);
+  outline-offset: 2px;
+}
+
+.mp-zoom button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.mp-zoom-level {
+  pointer-events: none;
+  align-self: center;
+  font-family: var(--mp-font-data);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--mp-ink-soft);
+  margin-top: 1px;
+}
+
+/* ---- the panel under the map -------------------------------------------- */
+
+.mp-panel {
+  min-height: 46px;
+  border-top: 1px dashed var(--mp-rule);
+  padding-top: 10px;
+}
+
+.mp-panel-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-bottom: 8px;
+}
+
+.mp-panel-head b {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.mp-hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mp-ink-soft);
+  line-height: 1.7;
+}
+
+.mp-hint + .mp-hint {
+  margin-top: 6px;
+}
+
+.mp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+  gap: 4px 14px;
+}
+
+.mp-node {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  color: var(--mp-ink);
+  background: none;
+  border: 0;
+  border-radius: 3px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.mp-node:hover {
+  background: var(--mp-paper-2);
+}
+
+.mp-node:focus-visible {
+  outline: 2px dashed var(--mp-accent);
+  outline-offset: 1px;
+}
+
+.mp-node-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  align-self: center;
+  background: var(--mp-idle);
+}
+
+.mp-node[data-tone="ok"] .mp-node-dot {
+  background: var(--mp-ok);
+}
+
+.mp-node[data-tone="warn"] .mp-node-dot {
+  background: var(--mp-warn);
+}
+
+.mp-node[data-tone="bad"] .mp-node-dot {
+  background: var(--mp-bad);
+}
+
+.mp-node-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-node-fig {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-family: var(--mp-font-data);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--mp-ink-soft);
+}
+
+.mp-dim {
+  font-size: 12px;
+  color: var(--mp-ink-faint);
+}
+
+/* ---- legend ------------------------------------------------------------- */
+
+.mp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  font-size: 12.5px;
+  color: var(--mp-ink-soft);
+}
+
+.mp-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.mp-legend i[data-tone="ok"] {
+  background: var(--mp-ok);
+}
+
+.mp-legend i[data-tone="warn"] {
+  background: var(--mp-warn);
+}
+
+.mp-legend i[data-tone="bad"] {
+  background: var(--mp-bad);
+}
+
+.mp-legend i[data-tone="off"] {
+  background: var(--mp-idle);
+}
+
+.mp-legend i[data-tone="idle"] {
+  background: var(--mp-paper);
+  border: 1.5px solid var(--mp-idle);
+}
+
+.mp-legend .mp-legend-note {
+  margin-left: auto;
+  color: var(--mp-ink-faint);
+}
+
+/* ---- controls ----------------------------------------------------------- */
+
+.mp-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.mp-btn {
+  font: inherit;
+  font-size: 13px;
+  color: var(--mp-ink);
+  background: var(--mp-paper);
+  border: 1.5px solid var(--mp-ink-soft);
+  border-radius: 12px 14px 12px 15px / 14px 12px 15px 12px;
+  padding: 5px 14px;
+  cursor: pointer;
+}
+
+.mp-btn:hover {
+  background: var(--mp-paper-2);
+}
+
+.mp-btn:focus-visible {
+  outline: 2px dashed var(--mp-accent);
+  outline-offset: 2px;
+}
+
+.mp-note {
+  font-size: 12px;
+  color: var(--mp-ink-faint);
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .mp-app {
+    padding: 14px 10px 40px;
+  }
+
+  .mp-sheet {
+    padding: 14px 12px 16px;
+  }
+
+  .mp-stamp {
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .mp-legend .mp-legend-note {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --mp-desk: #26231e;
+    --mp-paper: #302c25;
+    --mp-paper-2: #3a352c;
+    --mp-ink: #e6dfcf;
+    --mp-ink-soft: #b3a992;
+    --mp-ink-faint: #8b8271;
+    --mp-rule: #554d3f;
+    --mp-land: #3b3629;
+    --mp-land-2: #453f30;
+    --mp-land-ink: #9a8b6a;
+    --mp-coast: #8e836c;
+    --mp-ocean: #23282a;
+    --mp-ocean-2: #2b3335;
+    --mp-ocean-ink: #5b8b9a;
+    --mp-accent: #7fc0b8;
+    --mp-ok: #74b880;
+    --mp-warn: #dda94f;
+    --mp-bad: #dd7d68;
+    --mp-idle: #8b8271;
+  }
+
+  body {
+    background-image:
+      repeating-linear-gradient(58deg, rgba(255, 255, 255, 0.03) 0 3px, rgba(0, 0, 0, 0) 3px 9px),
+      repeating-linear-gradient(-61deg, rgba(0, 0, 0, 0.16) 0 2px, rgba(0, 0, 0, 0) 2px 11px),
+      linear-gradient(165deg, #2b2822 0%, #1e1c18 100%);
+  }
+
+  .mp-sheet {
+    /* Same grain, but the highlight that sells a lit sheet has to be a sheen on
+       dark paper rather than the white wash light mode paints with. Without
+       this the sheet keeps the white radial and reads as grey, not as paper. */
+    background-image:
+      repeating-linear-gradient(0deg, rgba(214, 190, 146, 0.045) 0 1px, rgba(0, 0, 0, 0) 1px 4px),
+      repeating-linear-gradient(90deg, rgba(214, 190, 146, 0.035) 0 1px, rgba(0, 0, 0, 0) 1px 5px),
+      radial-gradient(140% 120% at 8% -20%, rgba(255, 246, 226, 0.07) 0%, rgba(0, 0, 0, 0) 55%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 14px 30px -18px rgba(0, 0, 0, 0.8);
+  }
+}
