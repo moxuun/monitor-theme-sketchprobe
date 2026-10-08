@@ -3,7 +3,7 @@ import { bytes, rate } from "@/lib/format"
 import { loadColor } from "@/lib/derive"
 import { Icon } from "@/components/Icon"
 import { SketchBox, SketchSvg, useBoxSize, usePenFactor, useSketchSeed } from "@/sketch/Sketch"
-import { dial, flow, link, rack } from "@/sketch/shapes"
+import { chip, rack, speedGauge, transfer } from "@/sketch/shapes"
 
 /** Two lines of throughput over the last two minutes, one point per push. */
 function Spark({ series }: { series: { rx: number; tx: number }[] }) {
@@ -46,17 +46,15 @@ function Tile({ label, children, note, art, seedKey }: { label: string; children
   )
 }
 
-/** The node tile's figure: a rack of slots. Decoration -- the figure beside it
-    is the count, and this one does not try to be one. */
+/** The node tile's figure: a rack of slots. */
 function RackArt() {
   const factor = usePenFactor()
   const seed = useSketchSeed("sum-art-nodes")
   return <SketchSvg seed={seed} render={(gen, w, h) => rack(gen, w, h, { factor, seed })} />
 }
 
-/** The busiest node's CPU on a dial. No needle when nothing is reporting, and
-    the needle carries the load colour the meters already use. */
-function DialArt({ cpu }: { cpu: number | null }) {
+/** The busiest node's figure: a hand-drawn chip with color-mix core shading. */
+function CpuArt({ cpu }: { cpu: number | null }) {
   const factor = usePenFactor()
   const seed = useSketchSeed("sum-art-busy")
   const frac = cpu === null ? null : Math.min(1, Math.max(0, cpu / 100))
@@ -64,23 +62,23 @@ function DialArt({ cpu }: { cpu: number | null }) {
     <SketchSvg
       seed={seed}
       revision={frac}
-      render={(gen, w, h) => dial(gen, w, h, { factor, seed, frac, color: cpu === null ? undefined : loadColor(cpu) })}
+      render={(gen, w, h) => chip(gen, w, h, { factor, seed, frac, color: cpu === null ? undefined : loadColor(cpu) })}
     />
   )
 }
 
-/** The day's throughput: in and out of a container. */
-function FlowArt() {
+/** The day's throughput: pencil-shaded up & down flow arrows. */
+function TransferArt() {
   const factor = usePenFactor()
   const seed = useSketchSeed("sum-art-day")
-  return <SketchSvg seed={seed} render={(gen, w, h) => flow(gen, w, h, { factor, seed })} />
+  return <SketchSvg seed={seed} render={(gen, w, h) => transfer(gen, w, h, { factor, seed })} />
 }
 
-/** The live rate: a two-way link with its signal, above the spark. */
-function LinkArt() {
+/** The live rate: a pencil-shaded speedometer gauge. */
+function SpeedArt() {
   const factor = usePenFactor()
   const seed = useSketchSeed("sum-art-speed")
-  return <SketchSvg seed={seed} render={(gen, w, h) => link(gen, w, h, { factor, seed })} />
+  return <SketchSvg seed={seed} render={(gen, w, h) => speedGauge(gen, w, h, { factor, seed })} />
 }
 
 /** The four figures above the node list, scoped to the tab that is showing. */
@@ -103,12 +101,7 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
         label="节点"
         seedKey="sum-nodes"
         art={<RackArt />}
-        note={
-          <span className="with-icon">
-            <Icon name="bracket" size={13} />
-            {groups} 个分组
-          </span>
-        }
+        note={`${groups} 个分组`}
       >
         {reporting.length}
         <span className="tile-of"> / {nodes.length}</span>
@@ -116,7 +109,7 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
       <Tile
         label="最忙节点"
         seedKey="sum-busy"
-        art={<DialArt cpu={busiest ? (busiest.metrics?.cpu ?? 0) : null} />}
+        art={<CpuArt cpu={busiest ? (busiest.metrics?.cpu ?? 0) : null} />}
         note={busiest ? busiest.name : "没有节点在线"}
       >
         {busiest ? `${(busiest.metrics?.cpu ?? 0).toFixed(0)}%` : "—"}
@@ -124,7 +117,7 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
       <Tile
         label="今日流量"
         seedKey="sum-day"
-        art={<FlowArt />}
+        art={<TransferArt />}
         note={
           <span className="io">
             <span className="io-item down">
@@ -157,7 +150,7 @@ export function Summary({ nodes, group }: { nodes: Node[]; group: string | null 
           </div>
         </div>
         <div className="tile-art">
-          <LinkArt />
+          <SpeedArt />
         </div>
         <Spark series={series} />
       </SketchBox>

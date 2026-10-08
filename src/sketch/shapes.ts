@@ -195,89 +195,180 @@ export function rack(gen: RoughGenerator, w: number, h: number, o: Pen): Drawabl
  * `frac` is null when nothing is reporting, and then there is no needle at all:
  * one parked at zero would say "idle" about a node that is not there.
  */
-export function dial(gen: RoughGenerator, w: number, h: number, o: Pen & { frac: number | null; color?: string }): Drawable[] {
+/**
+ * A handcrafted CPU chip for the busiest node's tile.
+ * Drawn with rough.js pencil hachure fill and sketchy pins.
+ */
+export function chip(gen: RoughGenerator, w: number, h: number, o: Pen & { frac?: number | null; color?: string }): Drawable[] {
   const shapes: Drawable[] = []
-  const cy = h - 20
-  const cx = w - 24
-  const r = 19
+  const cx = w / 2
+  const cy = h / 2
+  const size = 34
+  const half = size / 2
 
-  shapes.push(gen.path(roundRect(4, cy - 13, 22, 26, 3), inkOptions(o.factor, { seed: o.seed, strokeWidth: 1.3 })))
-  for (let i = 0; i < 3; i++) {
-    const y = cy - 8 + i * 8
-    const seed = o.seed + 1 + i * 2
-    shapes.push(gen.line(4, y, -1, y, inkOptions(o.factor, { seed, strokeWidth: 1.1 })))
-    shapes.push(gen.line(26, y, 31, y, inkOptions(o.factor, { seed: seed + 1, strokeWidth: 1.1 })))
-  }
+  // Outer chip body with pencil shading
+  shapes.push(
+    gen.path(
+      roundRect(cx - half, cy - half, size, size, 4),
+      pencilOptions(o.factor, {
+        seed: o.seed,
+        strokeWidth: 1.4,
+        fill: "color-mix(in srgb, var(--accent) 18%, transparent)",
+        fillStyle: "hachure",
+        hachureAngle: -35,
+        hachureGap: 4.5,
+      }),
+    ),
+  )
 
-  shapes.push(gen.curve(arcPoints(cx, cy, r, 0, 180, 10), inkOptions(o.factor, { seed: o.seed + 8, strokeWidth: 1.4 })))
-  for (const deg of [0, 90, 180]) {
+  // Inner core
+  const coreSize = 14
+  shapes.push(
+    gen.path(
+      roundRect(cx - coreSize / 2, cy - coreSize / 2, coreSize, coreSize, 2),
+      pencilOptions(o.factor, {
+        seed: o.seed + 1,
+        strokeWidth: 1.2,
+        stroke: o.color ?? "var(--accent)",
+        fill: o.color ? `color-mix(in srgb, ${o.color} 30%, transparent)` : "color-mix(in srgb, var(--accent) 30%, transparent)",
+        fillStyle: "hachure",
+        hachureAngle: 45,
+        hachureGap: 3.5,
+      }),
+    ),
+  )
+
+  // Pins on all 4 sides
+  const pinLen = 5
+  const pinOffsets = [-8, 0, 8]
+  pinOffsets.forEach((offset, i) => {
+    const s = o.seed + 10 + i * 4
+    // Top & Bottom pins
+    shapes.push(gen.line(cx + offset, cy - half, cx + offset, cy - half - pinLen, inkOptions(o.factor, { seed: s, strokeWidth: 1.2 })))
+    shapes.push(gen.line(cx + offset, cy + half, cx + offset, cy + half + pinLen, inkOptions(o.factor, { seed: s + 1, strokeWidth: 1.2 })))
+    // Left & Right pins
+    shapes.push(gen.line(cx - half, cy + offset, cx - half - pinLen, cy + offset, inkOptions(o.factor, { seed: s + 2, strokeWidth: 1.2 })))
+    shapes.push(gen.line(cx + half, cy + offset, cx + half + pinLen, cy + offset, inkOptions(o.factor, { seed: s + 3, strokeWidth: 1.2 })))
+  })
+
+  return shapes
+}
+
+/**
+ * Two pencil-shaded hand-drawn arrows for throughput (download & upload).
+ */
+export function transfer(gen: RoughGenerator, w: number, h: number, o: Pen): Drawable[] {
+  const shapes: Drawable[] = []
+  const cx = w / 2
+
+  // Down arrow (Accent / Blue)
+  const xDown = cx - 12
+  const yTop = 10
+  const yBottom = h - 12
+  shapes.push(gen.line(xDown, yTop, xDown, yBottom, inkOptions(o.factor, { seed: o.seed, strokeWidth: 1.8, stroke: "var(--accent)" })))
+  shapes.push(
+    gen.path(
+      `M${xDown - 8},${yBottom - 11} L${xDown},${yBottom} L${xDown + 8},${yBottom - 11} Z`,
+      pencilOptions(o.factor, {
+        seed: o.seed + 1,
+        strokeWidth: 1.3,
+        stroke: "var(--accent)",
+        fill: "color-mix(in srgb, var(--accent) 35%, transparent)",
+        fillStyle: "hachure",
+        hachureAngle: 45,
+        hachureGap: 3.5,
+      }),
+    ),
+  )
+
+  // Up arrow (Plum / Purple)
+  const xUp = cx + 12
+  shapes.push(gen.line(xUp, yBottom, xUp, yTop, inkOptions(o.factor, { seed: o.seed + 2, strokeWidth: 1.8, stroke: "var(--plum)" })))
+  shapes.push(
+    gen.path(
+      `M${xUp - 8},${yTop + 11} L${xUp},${yTop} L${xUp + 8},${yTop + 11} Z`,
+      pencilOptions(o.factor, {
+        seed: o.seed + 3,
+        strokeWidth: 1.3,
+        stroke: "var(--plum)",
+        fill: "color-mix(in srgb, var(--plum) 35%, transparent)",
+        fillStyle: "hachure",
+        hachureAngle: -45,
+        hachureGap: 3.5,
+      }),
+    ),
+  )
+
+  return shapes
+}
+
+/**
+ * A speed gauge with pencil shading and needle for real-time speed.
+ */
+export function speedGauge(gen: RoughGenerator, w: number, h: number, o: Pen): Drawable[] {
+  const shapes: Drawable[] = []
+  const cx = w / 2
+  const cy = h - 14
+  const r = 24
+
+  // Arc path with soft colored pencil fill
+  const arcPts = arcPoints(cx, cy, r, 0, 180, 12)
+  const arcD = `M${arcPts[0][0]},${arcPts[0][1]} ` + arcPts.slice(1).map((p) => `L${p[0]},${p[1]}`).join(" ") + " Z"
+  shapes.push(
+    gen.path(
+      arcD,
+      pencilOptions(o.factor, {
+        seed: o.seed,
+        strokeWidth: 1.4,
+        fill: "color-mix(in srgb, var(--accent) 15%, transparent)",
+        fillStyle: "hachure",
+        hachureAngle: -30,
+        hachureGap: 5,
+      }),
+    ),
+  )
+
+  // Gauge ticks
+  for (const deg of [15, 50, 90, 130, 165]) {
     const a = (deg * Math.PI) / 180
+    const tickLen = deg === 90 ? 7 : 4
     shapes.push(
       gen.line(
-        cx + Math.cos(a) * (r - 5),
-        cy - Math.sin(a) * (r - 5),
+        cx + Math.cos(a) * (r - tickLen),
+        cy - Math.sin(a) * (r - tickLen),
         cx + Math.cos(a) * r,
         cy - Math.sin(a) * r,
-        inkOptions(o.factor, { seed: o.seed + 9 + deg, strokeWidth: 1.2 }),
+        inkOptions(o.factor, { seed: o.seed + deg, strokeWidth: 1.2 }),
       ),
     )
   }
-  shapes.push(gen.circle(cx, cy, 3, inkOptions(o.factor, { seed: o.seed + 13, strokeWidth: 1.2 })))
-  if (o.frac !== null) {
-    const a = Math.PI * (1 - o.frac)
-    shapes.push(
-      gen.line(cx, cy, cx + Math.cos(a) * (r - 3), cy - Math.sin(a) * (r - 3), inkOptions(o.factor, { seed: o.seed + 14, strokeWidth: 1.6, stroke: o.color ?? "var(--ink)" })),
-    )
-  }
-  return shapes
-}
 
-/**
- * In and out of a container, for the day's throughput.
- *
- * The two arrows carry the directions the theme already colours: in is the blue,
- * out is the plum, the same pairing as the io marks beside them.
- */
-export function flow(gen: RoughGenerator, w: number, h: number, o: Pen): Drawable[] {
-  const shapes: Drawable[] = []
-  const cx = w / 2
+  // Pivot circle
   shapes.push(
-    gen.path(roundRect(cx - 19, h - 24, 38, 20, 3), pencilOptions(o.factor, { seed: o.seed, strokeWidth: 1.3, fill: "var(--rule)", hachureGap: 5 })),
+    gen.circle(
+      cx,
+      cy,
+      5,
+      pencilOptions(o.factor, {
+        seed: o.seed + 20,
+        strokeWidth: 1.3,
+        fill: "var(--ink)",
+        fillStyle: "solid",
+      }),
+    ),
   )
-  const arrows: [number, number, number, string][] = [
-    [cx - 12, 6, h - 30, "var(--accent)"],
-    [cx + 12, h - 30, 6, "var(--plum)"],
-  ]
-  arrows.forEach(([x, from, to, color], i) => {
-    const seed = o.seed + 1 + i * 4
-    const dir = to > from ? 1 : -1
-    shapes.push(gen.line(x, from, x, to, inkOptions(o.factor, { seed, strokeWidth: 1.4, stroke: color })))
-    shapes.push(
-      gen.path(`M${x - 4},${to - dir * 6} L${x},${to} L${x + 4},${to - dir * 6}`, inkOptions(o.factor, { seed: seed + 1, strokeWidth: 1.4, stroke: color })),
-    )
-  })
-  return shapes
-}
 
-/**
- * A two-way link with its signal, for the live-rate tile.
- *
- * The same pairing again: out on the blue, back on the plum.
- */
-export function link(gen: RoughGenerator, w: number, h: number, o: Pen): Drawable[] {
-  const shapes: Drawable[] = []
-  const out = h * 0.35
-  const back = h * 0.65
-  const end = w * 0.6
-  const mid = h / 2
-  shapes.push(gen.line(6, out, end, out, inkOptions(o.factor, { seed: o.seed, strokeWidth: 1.4, stroke: "var(--accent)" })))
-  shapes.push(gen.path(`M${end - 6},${out - 5} L${end},${out} L${end - 6},${out + 5}`, inkOptions(o.factor, { seed: o.seed + 1, strokeWidth: 1.4, stroke: "var(--accent)" })))
-  shapes.push(gen.line(end, back, 6, back, inkOptions(o.factor, { seed: o.seed + 2, strokeWidth: 1.4, stroke: "var(--plum)" })))
-  shapes.push(gen.path(`M12,${back - 5} L6,${back} L12,${back + 5}`, inkOptions(o.factor, { seed: o.seed + 3, strokeWidth: 1.4, stroke: "var(--plum)" })))
-  const cx = w * 0.75
-  for (let i = 0; i < 2; i++) {
-    const r = 8 + i * 7
-    shapes.push(gen.curve(arcPoints(cx, mid, r, -40, 40, 6), inkOptions(o.factor, { seed: o.seed + 4 + i, strokeWidth: 1.3 })))
-  }
+  // Needle pointing up-right
+  const needleAngle = (50 * Math.PI) / 180
+  shapes.push(
+    gen.line(
+      cx,
+      cy,
+      cx + Math.cos(needleAngle) * (r - 4),
+      cy - Math.sin(needleAngle) * (r - 4),
+      inkOptions(o.factor, { seed: o.seed + 21, strokeWidth: 1.8, stroke: "var(--accent)" }),
+    ),
+  )
+
   return shapes
 }

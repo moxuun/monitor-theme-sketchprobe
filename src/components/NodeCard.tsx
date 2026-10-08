@@ -6,6 +6,7 @@ import { Badge } from "@/components/Badge"
 import { Flag } from "@/components/Flag"
 import { Icon } from "@/components/Icon"
 import { Meter } from "@/components/Meter"
+import { OsIcon } from "@/components/OsIcon"
 import { SketchBox } from "@/sketch/Sketch"
 
 export function NodeCard({ node }: { node: Node }) {
@@ -26,6 +27,7 @@ export function NodeCard({ node }: { node: Node }) {
       <div className="card-head">
         <Flag country={node.country} className="card-flag" />
         <span className="card-name">{node.name}</span>
+        {node.os ? <OsIcon os={node.os} className="card-os" /> : null}
         <span className="spacer" />
         <Badge tone={status.tone} dot={status.dot}>
           {status.mark ? <Icon name={status.mark} size={12} /> : null}
