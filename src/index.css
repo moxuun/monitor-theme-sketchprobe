@@ -922,8 +922,8 @@ img {
   font-family: var(--font-hand);
   font-size: 12px;
   letter-spacing: 0.16em;
-  fill: var(--map-land-ink);
-  fill-opacity: 0.85;
+  fill: var(--ink);
+  fill-opacity: 0.8;
   paint-order: stroke;
   stroke: var(--map-land);
   stroke-width: 2.6px;
@@ -1133,6 +1133,16 @@ img {
   flex-direction: column;
   gap: 7px;
   min-height: 40px;
+}
+
+/* The panel a click opens gets the same hand-drawn frame as a card, so what
+   answers the click reads as a thing rather than as a line of text that
+   appeared under the map. It hugs its own content rather than the map's width:
+   a frame ruled from edge to edge reads as a banner, not as a card. */
+.map-box {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 10px 12px;
 }
 
 .map-panel-head {

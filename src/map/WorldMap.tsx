@@ -6,7 +6,7 @@ import type { Node } from "@/lib/api"
 import { statusOf } from "@/lib/derive"
 import { Link } from "@/lib/route"
 import { generator, inkOptions, seedOf, toPaths } from "@/sketch/core"
-import { useBoxSize, usePenFactor } from "@/sketch/Sketch"
+import { SketchBox, useBoxSize, usePenFactor } from "@/sketch/Sketch"
 import { PencilDefs } from "@/map/PencilDefs"
 import { COUNTRIES, PLACES, WORLD, type Place } from "@/map/world"
 
@@ -607,7 +607,7 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
 
       <div className="map-panel">
         {selected ? (
-          <>
+          <SketchBox className="map-box" seedKey={`map-box-${selected.place.id}`} radius={10}>
             <div className="map-panel-head">
               <b>{selected.place.name}</b>
               <span className="map-dim">{selected.place.id}</span>
@@ -625,12 +625,8 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
                 </li>
               ))}
             </ul>
-          </>
-        ) : (
-          <p className="map-hint">
-            图上每个标记是一个国家或地区。悬停看名字，点一下列出那里的节点，点地图别处收起；拖动平移，滚轮缩放。
-          </p>
-        )}
+          </SketchBox>
+        ) : null}
 
         {adrift.length ? (
           <p className="map-hint">
