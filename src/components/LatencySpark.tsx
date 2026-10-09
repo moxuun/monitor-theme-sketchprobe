@@ -31,9 +31,10 @@ type Run = { trend: Trend; from: number; to: number }
  * What a move has to stand out from is the probe's own minute-to-minute wobble,
  * so a noisy line needs a bigger move to say anything; a twentieth of the
  * probe's own latency is the floor, since a line that wobbles by half a
- * millisecond is quiet whatever it is. A sample the probe timed out on stays a
- * break in the line rather than a colour, and pointing at the line names the
- * reading under the cursor.
+ * millisecond is quiet whatever it is. A minute the probe did not answer is not
+ * a hole in the line -- the row beside it already says when it last timed out --
+ * though it counts for nothing in the means either. Pointing at the line names
+ * the reading under the cursor.
  */
 export function LatencySpark({ samples }: { samples: LatencySample[] }) {
   const [ref, [w, h]] = useBoxSize<HTMLDivElement>()
@@ -84,14 +85,13 @@ export function LatencySpark({ samples }: { samples: LatencySample[] }) {
       return "flat"
     }
 
-    // One straight piece per stretch of the hour the probe answered, so a
-    // timeout stays a break in the line rather than a colour of its own.
+    // One straight piece per stretch of colour; the pieces meet end to end, so
+    // the hour reads as a single line however many colours it is spliced from.
     const runs: Run[] = []
     for (let i = 0; i < samples.length; i++) {
-      if (samples[i].value === null) continue
       const colour = trend(i)
       const last = runs[runs.length - 1]
-      if (last && last.to === i - 1 && last.trend === colour) last.to = i
+      if (last && last.trend === colour) last.to = i
       else runs.push({ trend: colour, from: i, to: i })
     }
 
