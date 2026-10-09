@@ -13,14 +13,20 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Reading the source is all this needs; the token gets no more than that.
+permissions:
+  contents: read
+
 jobs:
   # The only gate a tag receives: a hub installs the released archive as built,
   # so nothing checks the source after release.yml has run.
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      # Pinned to the commit each tag points at: a major tag is a moving
+      # reference its owner can repoint, and this workflow runs on every push.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24
           cache: npm

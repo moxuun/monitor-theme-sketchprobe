@@ -12,14 +12,16 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      # Pinned to the commit the tag points at: a major tag is a moving
+      # reference its owner can repoint, and this job runs under contents: write.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       # A v* tag can be neither moved nor deleted, so one that disagrees with
       # theme.json would be offered as an update forever: stop before publishing.
       - if: startsWith(github.ref, 'refs/tags/')
         run: |
           V=v$(node -p 'require("./theme.json").version')
           [ "$GITHUB_REF_NAME" = "$V" ] || { echo "::error::tag $GITHUB_REF_NAME, theme.json $V"; exit 1; }
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24
           cache: npm
@@ -31,8 +33,10 @@ jobs:
       # there, reading theme.json beside it as the manifest and preview.png as
       # the panel's thumbnail. theme.tar.gz is the one asset name its update
       # button fetches -- and the only one, so the .sha256 beside it is for
-      # whoever downloads the archive by hand, not for the hub.
-      - run: tar czf theme.tar.gz dist theme.json preview.png
+      # whoever downloads the archive by hand, not for the hub. LICENSE rides
+      # along because MIT asks the notice to travel with the copies; the bundled
+      # third-party texts are already inside dist/licenses/.
+      - run: tar czf theme.tar.gz dist theme.json preview.png LICENSE
       - run: sha256sum theme.tar.gz | cut -d' ' -f1 | tee theme.tar.gz.sha256
 
       # A manual dispatch builds and packages without publishing, so the path can
