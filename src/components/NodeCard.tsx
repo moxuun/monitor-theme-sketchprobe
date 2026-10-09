@@ -97,7 +97,7 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
                 <div key={line.id}>
                   <dt>{line.name}</dt>
                   <LatencySpark samples={line.series} />
-                  <dd className={line.value === null ? "error" : undefined}>
+                  <dd className={line.value === null ? "latency-timeout" : undefined}>
                     {line.value === null ? "超时" : `${Number(line.value.toFixed(1))} ms`}
                   </dd>
                 </div>

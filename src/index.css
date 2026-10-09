@@ -767,7 +767,7 @@ img {
   color: var(--ink-soft);
 }
 
-.card-latency-lines dd.error {
+.card-latency-lines dd.latency-timeout {
   color: var(--bad);
 }
 
