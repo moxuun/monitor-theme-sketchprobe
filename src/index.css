@@ -548,7 +548,9 @@ img {
 .card-head {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
+  row-gap: 6px;
 }
 
 .card-flag {
@@ -613,9 +615,23 @@ img {
   font-family: var(--font-hand);
   font-size: 17px;
   line-height: 1.25;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* The name's weight in the line break: with a fixed basis the badges are
+     weighed on their own, and the name no longer shrinks to zero to make room
+     for them. 100px keeps one badge beside the name, and sends two to their
+     own line. The name itself wraps rather than ellipsises, so a long machine
+     name is read in full. */
+  flex: 1 1 100px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.card-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Right-aligned on whichever line it lands on: beside the name when the
+     badges fit there, on a line of their own when they do not. */
+  margin-left: auto;
 }
 
 /* The remark as a small annotation: a dashed pen box over a patch of clean

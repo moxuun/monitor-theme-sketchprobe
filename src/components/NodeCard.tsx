@@ -7,7 +7,6 @@ import { Badge } from "@/components/Badge"
 import { Flag } from "@/components/Flag"
 import { Icon } from "@/components/Icon"
 import { Meter } from "@/components/Meter"
-import { OsIcon } from "@/components/OsIcon"
 import { SketchBox } from "@/sketch/Sketch"
 
 export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResult }) {
@@ -33,13 +32,16 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
       <div className="card-head">
         <Flag country={node.country} className="card-flag" />
         <span className="card-name">{node.name}</span>
-        {node.os ? <OsIcon os={node.os} className="card-os" /> : null}
-        <span className="spacer" />
-        {expiry ? <Badge tone={expiry.tone}>{expiry.text}</Badge> : null}
-        <Badge tone={status.tone} dot={status.dot}>
-          {status.mark ? <Icon name={status.mark} size={12} /> : null}
-          {status.text}
-        </Badge>
+        {/* Grouped so the pair moves as one: two badges never fit beside a
+            readable name, so they take a line of their own rather than
+            squeezing the name to nothing. */}
+        <span className="card-badges">
+          {expiry ? <Badge tone={expiry.tone}>{expiry.text}</Badge> : null}
+          <Badge tone={status.tone} dot={status.dot}>
+            {status.mark ? <Icon name={status.mark} size={12} /> : null}
+            {status.text}
+          </Badge>
+        </span>
       </div>
 
       {/* A remark is an annotation, so it is drawn as one: a dashed pen box on
