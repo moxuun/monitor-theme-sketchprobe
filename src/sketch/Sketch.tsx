@@ -162,7 +162,7 @@ export function SketchBox({
     <div className={cx("sketch-box", className)}>
       <SketchSvg
         seed={seed}
-        revision={`${radius ?? ""}|${dashed ? 1 : 0}|${fill ?? ""}|${stroke ?? ""}|${strokeWidth ?? ""}|${revision ?? ""}`}
+        revision={`${factor}|${radius ?? ""}|${dashed ? 1 : 0}|${fill ?? ""}|${stroke ?? ""}|${strokeWidth ?? ""}|${revision ?? ""}`}
         render={(gen, w, h, s) => frame(gen, w, h, { factor, seed: s, radius, dashed, fill, stroke, strokeWidth })}
       />
       {children}
@@ -190,7 +190,7 @@ export function SketchBar({
     <div className={cx("sketch-bar", className)} style={{ height }}>
       <SketchSvg
         seed={seed}
-        revision={value}
+        revision={`${factor}|${color}|${value}`}
         render={(gen, w, h, s) => bar(gen, w, h, value, { factor, seed: s, color })}
       />
     </div>
@@ -205,7 +205,7 @@ export function SketchRule({ className, dashed, strokeWidth, seedKey }: { classN
     <div className={cx("sketch-rule", className)}>
       <SketchSvg
         seed={seed}
-        revision={`${dashed ? 1 : 0}|${strokeWidth ?? ""}`}
+        revision={`${factor}|${dashed ? 1 : 0}|${strokeWidth ?? ""}`}
         render={(gen, w, _h, s) => rule(gen, w, { factor, seed: s, dashed, strokeWidth })}
       />
     </div>
@@ -218,7 +218,7 @@ export function SketchRing({ children, className, seedKey }: { children: ReactNo
   const seed = useSketchSeed(seedKey)
   return (
     <div className={cx("sketch-ring", className)}>
-      <SketchSvg seed={seed} render={(gen, w, h, s) => penCircle(gen, w, h, { factor, seed: s })} />
+      <SketchSvg seed={seed} revision={factor} render={(gen, w, h, s) => penCircle(gen, w, h, { factor, seed: s })} />
       {children}
     </div>
   )
