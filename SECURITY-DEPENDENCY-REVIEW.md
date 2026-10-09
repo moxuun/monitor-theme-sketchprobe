@@ -200,7 +200,7 @@ major 标签可被上游移动；若上游账号或标签被攻陷，代码会�
   1. hub 侧 `/api/nodes` 对匿名请求的字段白名单（F7）；
   2. `src/components/Icon.tsx` 图标是否为外部来源（§三）；
   3. 所分发字体相对上游是否被修改（§三）；
-  4. PNG 素材的元数据与像素内容：本次用 `file` / `exiftool` 检查了 `preview.png`、`preview-dark.png`、`map-preview/shot-full.png`、`public/apple-touch-icon.png`，并对 `preview.png`、`preview-dark.png` 做了 `strings` 检索；**`map-preview/shot-{dark,narrow,seam,zoom}.png` 未查看，且未做像素内容审计**，不能据此断言这些素材不含敏感信息；
+  4. PNG 素材的元数据与像素内容：本次 `file` 返回了 `preview.png`、`preview-dark.png`、`map-preview/shot-full.png`、`public/apple-touch-icon.png` 四个文件的格式信息；尝试调用 `exiftool` 但该工具在本机不可用，**未取得有效的元数据检查结果**。另对 `preview.png`、`preview-dark.png` 做了有限的 `strings` 检索，`map-preview/shot-{dark,narrow,seam,zoom}.png` 未查看，且**未做像素内容审计**——因此不能据此断言这些素材不含敏感信息；
   5. 注册表公告之外的传递依赖风险；git 历史中的秘密（未扫描历史）。
 - 本报告不含任何秘密值。
 
@@ -239,7 +239,7 @@ F4 固定的提交：`actions/checkout` → `3d3c42e5aac5ba805825da76410c181273b
 
 F1 的两点说明：
 
-- 许可文本取自各包发布版本自带的 `LICENSE`。其中 `points-on-path@0.2.1` 的版权行上游原文即为 `Copyright (c) 2020 Preet`（缺姓氏），声明文件按原样保留并加注说明。
+- 许可文本取自各包发布版本自带的 `LICENSE`。其中 `points-on-path@0.2.1` 的版权行按上游 LICENSE 原文保留为 `Copyright (c) 2020 Preet`，声明文件不作改写。
 - 声明文件放在 `public/licenses/`，由 Vite 拷贝进 `dist/licenses/`，因此随归档分发，无需改动构建流程。
 
 本次修复未改动业务逻辑（`src/` 未变），未安装依赖，未执行构建，未推送远端。

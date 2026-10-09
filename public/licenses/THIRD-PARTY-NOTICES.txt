@@ -174,8 +174,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Note: the copyright line above is reproduced exactly as it appears in the
-upstream package's LICENSE file (points-on-path 0.2.1), which truncates the
-holder's name.
+upstream package's LICENSE file (points-on-path 0.2.1).
 
 
 -------------------------------------------------------------------------------
