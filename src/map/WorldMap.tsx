@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { flushSync } from "react-dom"
-import type { Drawable } from "roughjs/bin/core"
+import type { Drawable, PathInfo } from "roughjs/bin/core"
 
 import type { Node } from "@/lib/api"
 import { statusOf } from "@/lib/derive"
@@ -427,16 +427,31 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
     return { clusters, adrift }
   }, [nodes])
 
-  /** Ring paths, drawn once around the origin and positioned by transform. */
+  /**
+   * Ring paths, drawn once around the origin and positioned by transform.
+   *
+   * The memo is keyed on the geometry itself -- each country's id and its ring
+   * radius -- rather than on `clusters`, which is a fresh array on every push.
+   * A node's CPU changing moves no ring, so the pen is not put to paper again
+   * for it; the sort keeps the key independent of the order clusters arrive in.
+   */
+  const ringGeometry = clusters.map((c) => `${c.place.id}:${ringRadius(c.nodes.length)}`).sort().join("|")
   const rings = useMemo(
     () =>
-      new Map(
-        clusters.map((c) => [
-          c.place.id,
-          toPaths(circleAt(0, 0, ringRadius(c.nodes.length), { factor, seed: seedOf(`map-mark-${c.place.id}`), strokeWidth: 1.6, loose: 1.25 })),
-        ]),
+      new Map<string, PathInfo[]>(
+        ringGeometry
+          .split("|")
+          .filter(Boolean)
+          .map((entry): [string, PathInfo[]] => {
+            const cut = entry.indexOf(":")
+            const id = entry.slice(0, cut)
+            return [
+              id,
+              toPaths(circleAt(0, 0, Number(entry.slice(cut + 1)), { factor, seed: seedOf(`map-mark-${id}`), strokeWidth: 1.6, loose: 1.25 })),
+            ]
+          }),
       ),
-    [clusters, factor],
+    [ringGeometry, factor],
   )
 
   const frame = useMemo(() => (w > 0 ? toPaths(mapFrame(w, h, factor, seedOf("map-frame"))) : []), [w, h, factor])
