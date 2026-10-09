@@ -50,7 +50,7 @@ function Tile({ label, children, note, art, seedKey }: { label: string; children
 function RackArt() {
   const factor = usePenFactor()
   const seed = useSketchSeed("sum-art-nodes")
-  return <SketchSvg seed={seed} render={(gen, w, h) => rack(gen, w, h, { factor, seed })} />
+  return <SketchSvg seed={seed} revision={factor} render={(gen, w, h) => rack(gen, w, h, { factor, seed })} />
 }
 
 /** The busiest node's figure: a hand-drawn chip with color-mix core shading. */
@@ -61,7 +61,7 @@ function CpuArt({ cpu }: { cpu: number | null }) {
   return (
     <SketchSvg
       seed={seed}
-      revision={frac}
+      revision={`${factor}|${frac}`}
       render={(gen, w, h) => chip(gen, w, h, { factor, seed, frac, color: cpu === null ? undefined : loadColor(cpu) })}
     />
   )
@@ -71,14 +71,14 @@ function CpuArt({ cpu }: { cpu: number | null }) {
 function TransferArt() {
   const factor = usePenFactor()
   const seed = useSketchSeed("sum-art-day")
-  return <SketchSvg seed={seed} render={(gen, w, h) => transfer(gen, w, h, { factor, seed })} />
+  return <SketchSvg seed={seed} revision={factor} render={(gen, w, h) => transfer(gen, w, h, { factor, seed })} />
 }
 
 /** The live rate: a pencil-shaded speedometer gauge. */
 function SpeedArt() {
   const factor = usePenFactor()
   const seed = useSketchSeed("sum-art-speed")
-  return <SketchSvg seed={seed} render={(gen, w, h) => speedGauge(gen, w, h, { factor, seed })} />
+  return <SketchSvg seed={seed} revision={factor} render={(gen, w, h) => speedGauge(gen, w, h, { factor, seed })} />
 }
 
 /** The four figures above the node list, scoped to the tab that is showing. */

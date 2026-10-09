@@ -5,7 +5,7 @@ import type { Drawable } from "roughjs/bin/core"
 import type { Node } from "@/lib/api"
 import { statusOf } from "@/lib/derive"
 import { Link } from "@/lib/route"
-import { generator, inkOptions, seedOf, toPaths } from "@/sketch/core"
+import { generator, inkOptions, pathStyle, seedOf, toPaths } from "@/sketch/core"
 import { SketchBox, useBoxSize, usePenFactor } from "@/sketch/Sketch"
 import { PencilDefs } from "@/map/PencilDefs"
 import { COUNTRIES, PLACES, WORLD, type Place } from "@/map/world"
@@ -132,7 +132,7 @@ function Compass({ x, y, factor, seed }: { x: number; y: number; factor: number;
   return (
     <g className="map-compass">
       {paths.map((p, i) => (
-        <path key={i} d={p.d} style={{ stroke: p.stroke, strokeWidth: String(p.strokeWidth), fill: p.fill }} />
+        <path key={i} d={p.d} style={pathStyle(p)} />
       ))}
       <text x={x} y={y + COMPASS_R + 13} textAnchor="middle" className="map-compass-n">
         N
@@ -529,7 +529,7 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
                         so the status colour -- exactly where it was. */}
                     <g className="map-ring">
                       {(rings.get(c.place.id) ?? []).map((p, i) => (
-                        <path key={i} d={p.d} style={{ stroke: p.stroke, strokeWidth: String(p.strokeWidth), fill: p.fill }} />
+                        <path key={i} d={p.d} style={pathStyle(p)} />
                       ))}
                     </g>
                     <circle className="map-dot" r={dotRadius(c.nodes.length)} />
@@ -549,7 +549,7 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
 
           <g className="map-frame">
             {frame.map((p, i) => (
-              <path key={i} d={p.d} style={{ stroke: p.stroke, strokeWidth: String(p.strokeWidth), fill: p.fill }} />
+              <path key={i} d={p.d} style={pathStyle(p)} />
             ))}
           </g>
         </svg>
@@ -585,7 +585,7 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
         {tip ? (
           <div
             className="map-tip"
-            data-side={tip.y * s < 74 ? "below" : "above"}
+            data-side={at(tip).y < 74 ? "below" : "above"}
             style={{ left: Math.min(Math.max(at(tip).x, 62), Math.max(62, w - 62)), top: at(tip).y }}
           >
             <b>{tip.place.name}</b>

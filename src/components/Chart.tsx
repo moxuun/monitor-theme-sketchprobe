@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react"
 
 import { axisTop, byteTop, clockFor, quarters, rateAxis, timeTicks } from "@/lib/format"
 import type { MetricRow } from "@/lib/history"
-import { generator, toPaths } from "@/sketch/core"
+import { generator, pathStyle, toPaths } from "@/sketch/core"
 import { axes, gridLine } from "@/sketch/shapes"
 import { useBoxSize, usePenFactor, useSketchSeed } from "@/sketch/Sketch"
 
@@ -175,7 +175,7 @@ export function ResourceChart({
           <>
             <g transform={`translate(${PAD.left} ${PAD.top})`}>
               {plot.rough.map((p, i) => (
-                <path key={i} d={p.d} style={{ stroke: p.stroke, strokeWidth: String(p.strokeWidth), fill: p.fill }} />
+                <path key={i} d={p.d} style={pathStyle(p)} />
               ))}
               {plot.drawn.map((d, si) => (
                 <g key={si}>
