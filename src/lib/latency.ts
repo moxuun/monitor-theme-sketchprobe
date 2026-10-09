@@ -8,8 +8,6 @@ export type LatencySample = { ts: number; value: number | null }
 export type Latency = {
   id: number
   name: string
-  /** The newest sample in the window, which is the one the row prints. */
-  ts: number
   value: number | null
   /** The whole window, oldest first, so the row can draw how it got here. */
   series: LatencySample[]
@@ -58,7 +56,6 @@ export function useLatencies(nodeIds: number[]) {
               return {
                 id: taskId,
                 name: data.probes?.[String(taskId)] ?? `探测 ${taskId}`,
-                ts: newest.ts,
                 value: newest.value,
                 series: samples,
               }

@@ -99,9 +99,6 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
                   <LatencySpark samples={line.series} />
                   <dd className={line.value === null ? "error" : undefined}>
                     {line.value === null ? "超时" : `${Number(line.value.toFixed(1))} ms`}
-                    <time dateTime={new Date(line.ts * 1000).toISOString()}>
-                      {new Date(line.ts * 1000).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false })}
-                    </time>
                   </dd>
                 </div>
               ))}

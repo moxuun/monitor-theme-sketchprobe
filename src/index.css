@@ -725,12 +725,6 @@ img {
   color: var(--bad);
 }
 
-.card-latency-lines time {
-  margin-left: 8px;
-  color: var(--muted);
-  font-size: 10px;
-}
-
 /* The hour behind the reading, in the space the row leaves between the probe's
    name and its value. The height is what the line and the readout over it need. */
 .latency-spark {
