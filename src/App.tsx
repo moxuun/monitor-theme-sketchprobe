@@ -220,7 +220,7 @@ export function App() {
                     key={t.key ?? "*"}
                     className="tab"
                     type="button"
-                    aria-selected={t.key === group}
+                    aria-pressed={t.key === group}
                     onClick={() => setGroup(t.key)}
                   >
                     {t.key === group ? <SketchRing seedKey={`tab-${t.key ?? "*"}`}>{t.label}</SketchRing> : t.label}
