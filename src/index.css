@@ -528,7 +528,11 @@ img {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  /* The 310px floor is the card's readable minimum, but a phone narrower than
+     that (a folded Fold is 280) would push the track past the shell's padding
+     and scroll the page sideways. `min()` keeps the floor on any screen wide
+     enough for it and yields to the container below that. */
+  grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr));
   gap: var(--gap);
 }
 
