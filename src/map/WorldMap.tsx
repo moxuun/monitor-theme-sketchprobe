@@ -585,7 +585,7 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
         {tip ? (
           <div
             className="map-tip"
-            data-side={tip.y * s < 74 ? "below" : "above"}
+            data-side={at(tip).y < 74 ? "below" : "above"}
             style={{ left: Math.min(Math.max(at(tip).x, 62), Math.max(62, w - 62)), top: at(tip).y }}
           >
             <b>{tip.place.name}</b>
