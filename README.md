@@ -90,7 +90,7 @@
 
 随主题一起打包的第三方资源：
 
-- [Excalifont](https://github.com/excalidraw/excalifont) —— [SIL Open Font License 1.1](public/licenses/Excalifont-OFL.txt)
+- [Excalifont](https://plus.excalidraw.com/excalifont) —— [SIL Open Font License 1.1](public/licenses/Excalifont-OFL.txt)
 - [country-flag-icons](https://gitlab.com/catamphetamine/country-flag-icons) —— MIT（国旗）
 - [rough.js](https://www.npmjs.com/package/roughjs) —— MIT（手绘线条，含 hachure-fill / path-data-parser / points-on-curve / points-on-path）
 - [React](https://www.npmjs.com/package/react) / [react-dom](https://www.npmjs.com/package/react-dom) / [scheduler](https://www.npmjs.com/package/scheduler) —— MIT

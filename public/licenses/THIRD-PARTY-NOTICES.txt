@@ -210,7 +210,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Bundled assets under other licenses
 -------------------------------------------------------------------------------
 
-Excalifont -- https://github.com/excalidraw/excalifont
+Excalifont -- https://plus.excalidraw.com/excalifont
   SIL Open Font License 1.1, Copyright (c) 2024 by Excalidraw.
   Full text: licenses/Excalifont-OFL.txt
 
