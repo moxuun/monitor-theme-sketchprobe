@@ -555,7 +555,7 @@ img {
 .tab:hover {
   color: var(--ink-soft);
 }
-.tab[aria-selected="true"] {
+.tab[aria-pressed="true"] {
   color: var(--ink);
 }
 
@@ -563,12 +563,11 @@ img {
 
 .grid {
   display: grid;
-  /* `min(100%, 310px)` rather than a flat 310px: below about 375px of window the
-     shell is narrower than the column, and a flat minimum made the row overflow
-     it -- the page scrolled 44px sideways and the rightmost readings slid under
-     the fixed jump button. Capping the minimum at the container width keeps one
-     column, unclipped, at any width, and changes nothing from 310px up. */
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+  /* The 310px floor is the card's readable minimum, but a phone narrower than
+     that (a folded Fold is 280) would push the track past the shell's padding
+     and scroll the page sideways. `min()` keeps the floor on any screen wide
+     enough for it and yields to the container below that. */
+  grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr));
   gap: var(--gap);
 }
 
