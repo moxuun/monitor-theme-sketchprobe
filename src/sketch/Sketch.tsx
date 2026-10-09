@@ -116,7 +116,7 @@ export function SketchSvg({
         // Inline style rather than attributes: the palette reaches the shape as
         // `var(--ok)` or `currentColor`, and a custom property in a presentation
         // attribute is not resolved by every browser, while in a style it is.
-        <path key={i} d={p.d} style={{ stroke: p.stroke, strokeWidth: String(p.strokeWidth), fill: p.fill }} />
+        <path key={i} d={p.d} style={{ stroke: p.stroke, strokeWidth: String(p.strokeWidth), fill: p.fill, strokeDasharray: p.strokeLineDash?.join(" ") }} />
       ))}
     </svg>
   )

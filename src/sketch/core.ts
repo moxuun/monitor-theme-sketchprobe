@@ -10,6 +10,12 @@ import type { Drawable, Options, PathInfo } from "roughjs/bin/core"
 export const generator = rough.generator()
 
 /**
+ * A drawn set, ready for a `<path>`: `PathInfo` plus the dash pattern rough.js
+ * would have applied itself had it been the one writing the element.
+ */
+export type SketchPath = PathInfo & { strokeLineDash?: number[] }
+
+/**
  * A stable 31-bit seed from a string, for rough.js's `seed` option.
  *
  * Two reasons this exists rather than leaving the seed out. A live panel
@@ -38,8 +44,12 @@ export function seedOf(key: string): number {
  * without passing it, so coordinates keep every digit the float has. Every path
  * here is laid out in CSS pixels at a known size, where a hundredth is already
  * past what the screen resolves: rounding cuts a card's path data by about half.
+ *
+ * The dash pattern is carried out for the same reason: `strokeLineDash` is read
+ * by rough.js's own renderer, which drawing the sets as React `<path>` elements
+ * bypasses, so a dashed gridline would come out solid.
  */
-export function toPaths(drawable: Drawable): PathInfo[] {
+export function toPaths(drawable: Drawable): SketchPath[] {
   const decimals = drawable.options.fixedDecimalPlaceDigits
   const sets = drawable.sets ?? []
   return sets.map((set) => {
@@ -51,7 +61,7 @@ export function toPaths(drawable: Drawable): PathInfo[] {
       return { d, stroke: o.fill ?? "none", strokeWidth: o.fillWeight < 0 ? o.strokeWidth / 2 : o.fillWeight, fill: "none" }
     }
     if (set.type === "fillPath") return { d, stroke: "none", strokeWidth: 0, fill: o.fill ?? "none" }
-    return { d, stroke: o.stroke, strokeWidth: o.strokeWidth, fill: "none" }
+    return { d, stroke: o.stroke, strokeWidth: o.strokeWidth, fill: "none", strokeLineDash: o.strokeLineDash }
   })
 }
 
