@@ -877,7 +877,11 @@ img {
 .fact-key {
   font-family: var(--font-hand);
   font-size: 13px;
-  color: var(--muted);
+  /* `--muted` is a 3.7:1 grey: at 13px these read as pencil dust rather than as
+     the name of a reading, and the icon beside each one is stroked in the same
+     colour. `--ink-soft` is 7.4:1 and still a step below the value's `--ink`,
+     so the pair keeps its key/value order. */
+  color: var(--ink-soft);
   white-space: nowrap;
 }
 
@@ -906,28 +910,13 @@ img {
 
 .panels {
   display: grid;
-  /* Two columns rather than `auto-fit`, because there are exactly four panels.
-     At a track count of three the fourth sits alone on its row with two empty
-     tracks beside it, and `auto-fit` collapses only tracks that no item lands
-     in at all -- both spare ones carry a panel in the first row, so the row is
-     left half empty instead of stretching. */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* One panel per row, at every width. Each of the four is a plot read against
+     its own y axis, and side by side they were being squeezed into half the
+     page: the byte axes need room for labels like `1.2 GiB`, and the network
+     panel carries two series on one logarithmic scale. Full width keeps the
+     reading legible and gives the four panels one consistent shape. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--gap);
-}
-
-/* Wide enough for all four across, which is the shape the page is drawn for. */
-@media (min-width: 1560px) {
-  .panels {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-/* Below this a pair of plots is narrower than the axis labels they have to
-   carry, so they stack. */
-@media (max-width: 620px) {
-  .panels {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 .panel {
@@ -975,7 +964,11 @@ img {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 10px;
-  fill: var(--faint);
+  /* `--faint` is a rule colour, not an ink one: at 2.2:1 on paper the tick
+     labels were decoration. They are readings -- the axis a series is measured
+     against -- so they wear `--ink-soft`, the same ink as the panel's own
+     reading, at 7.4:1 light and 9:1 dark. */
+  fill: var(--ink-soft);
 }
 
 /* ---------------------------------------------------------------- misc -- */
