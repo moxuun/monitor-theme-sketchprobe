@@ -219,9 +219,34 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
         >
           {node.traffic_limit > 0 ? pair(node.month_used ?? 0, node.traffic_limit) : "不限"}
         </Fact>
-        <Fact label="流量上限">{node.traffic_limit > 0 ? bytes(node.traffic_limit) : FOREVER}</Fact>
-        <Fact label="累计流量">{bytes(node.total_rx + node.total_tx)}</Fact>
-        <Fact label="计费">
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="quota" size={13} />
+              流量上限
+            </span>
+          }
+        >
+          {node.traffic_limit > 0 ? bytes(node.traffic_limit) : FOREVER}
+        </Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="sum" size={13} />
+              累计流量
+            </span>
+          }
+        >
+          {bytes(node.total_rx + node.total_tx)}
+        </Fact>
+        <Fact
+          label={
+            <span className="with-icon">
+              <Icon name="tag" size={13} />
+              计费
+            </span>
+          }
+        >
           {node.price > 0 ? `${money(node.price, node.currency || "CNY")} / ${cycle(node.billing_cycle)}` : "免费"}
         </Fact>
         <Fact
