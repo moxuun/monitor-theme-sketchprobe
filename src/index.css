@@ -861,7 +861,11 @@ img {
 .fact-key {
   font-family: var(--font-hand);
   font-size: 13px;
-  color: var(--muted);
+  /* `--muted` is a 3.7:1 grey: at 13px these read as pencil dust rather than as
+     the name of a reading, and the icon beside each one is stroked in the same
+     colour. `--ink-soft` is 7.4:1 and still a step below the value's `--ink`,
+     so the pair keeps its key/value order. */
+  color: var(--ink-soft);
   white-space: nowrap;
 }
 
