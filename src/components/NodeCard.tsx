@@ -6,6 +6,7 @@ import type { LatencyResult } from "@/lib/latency"
 import { Badge } from "@/components/Badge"
 import { Flag } from "@/components/Flag"
 import { Icon } from "@/components/Icon"
+import { LatencySpark } from "@/components/LatencySpark"
 import { Meter } from "@/components/Meter"
 import { SketchBox } from "@/sketch/Sketch"
 
@@ -88,7 +89,6 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
 
       {node.online ? (
         <div className="card-latency">
-          <span className="card-latency-label">延迟 · 最近采样</span>
           {!latency ? <span>读取中…</span> : latency.error ? (
             <span>延迟暂不可用</span>
           ) : latency.lines.length === 0 ? <span>暂无探测记录</span> : (
@@ -96,6 +96,7 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
               {latency.lines.map((line) => (
                 <div key={line.id}>
                   <dt>{line.name}</dt>
+                  <LatencySpark samples={line.series} />
                   <dd className={line.value === null ? "error" : undefined}>
                     {line.value === null ? "超时" : `${Number(line.value.toFixed(1))} ms`}
                     <time dateTime={new Date(line.ts * 1000).toISOString()}>

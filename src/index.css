@@ -695,13 +695,6 @@ img {
   color: var(--muted);
 }
 
-.card-latency-label {
-  display: block;
-  margin-bottom: 5px;
-  font-family: var(--font-hand);
-  font-size: 13px;
-}
-
 .card-latency-lines {
   margin: 0;
   display: grid;
@@ -711,7 +704,7 @@ img {
 .card-latency-lines > div {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
 }
 
@@ -736,6 +729,35 @@ img {
   margin-left: 8px;
   color: var(--muted);
   font-size: 10px;
+}
+
+/* The hour behind the reading, in the space the row leaves between the probe's
+   name and its value. The height is what the line and the readout over it need. */
+.latency-spark {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+}
+
+.latency-spark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* The line answers the pointer, so it should say so. */
+  cursor: crosshair;
+}
+
+.latency-spark text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+/* The reading under the pointer: the one thing in the row that is not written
+   down anywhere else. */
+.latency-spark .latency-spark-readout {
+  fill: var(--ink-soft);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
 }
 
 .card-foot {

@@ -4,7 +4,16 @@ import { api } from "@/lib/api"
 
 type Ping = { ts: number; task_id: number; latency: number | null }
 type PingHistory = { ping?: Ping[]; probes?: Record<string, string> }
-export type Latency = { id: number; name: string; ts: number; value: number | null }
+export type LatencySample = { ts: number; value: number | null }
+export type Latency = {
+  id: number
+  name: string
+  /** The newest sample in the window, which is the one the row prints. */
+  ts: number
+  value: number | null
+  /** The whole window, oldest first, so the row can draw how it got here. */
+  series: LatencySample[]
+}
 export type LatencyResult = { lines: Latency[]; error: boolean }
 
 // Keep the request limit across group changes and React effect remounts too.
@@ -32,19 +41,28 @@ export function useLatencies(nodeIds: number[]) {
           try {
             if (!live || document.hidden || ticket !== generation) return
             const data = await api<PingHistory>(`/nodes/${id}/metrics?series=ping&hours=1&points=60`)
-            const latest = new Map<number, Ping>()
+            const history = new Map<number, LatencySample[]>()
             for (const point of data.ping ?? []) {
               if (!Number.isFinite(point.task_id) || !Number.isFinite(point.ts)) continue
               if (point.latency !== null && (!Number.isFinite(point.latency) || point.latency < 0)) continue
-              const previous = latest.get(point.task_id)
-              if (!previous || point.ts >= previous.ts) latest.set(point.task_id, point)
+              const samples = history.get(point.task_id)
+              const sample = { ts: point.ts, value: point.latency }
+              if (samples) samples.push(sample)
+              else history.set(point.task_id, [sample])
             }
-            const lines = [...latest.values()].map((point) => ({
-              id: point.task_id,
-              name: data.probes?.[String(point.task_id)] ?? `探测 ${point.task_id}`,
-              ts: point.ts,
-              value: point.latency,
-            }))
+            const lines = [...history.entries()].map(([taskId, samples]) => {
+              // Oldest first: the row draws left to right, and the newest sample
+              // is the one it prints beside the line.
+              samples.sort((a, b) => a.ts - b.ts)
+              const newest = samples[samples.length - 1]
+              return {
+                id: taskId,
+                name: data.probes?.[String(taskId)] ?? `探测 ${taskId}`,
+                ts: newest.ts,
+                value: newest.value,
+                series: samples,
+              }
+            })
             if (live && !document.hidden && ticket === generation) {
               setResults((old) => ({ ...old, [id]: { lines, error: false } }))
             }
