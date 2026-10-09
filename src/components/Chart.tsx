@@ -54,7 +54,7 @@ export function ResourceChart({
   axis,
   format,
   hours,
-  height = 150,
+  height = 220,
 }: {
   rows: MetricRow[]
   series: Series[]
@@ -62,6 +62,8 @@ export function ResourceChart({
   format: (v: number) => string
   /** The window the rows cover, which decides the time format on the axis. */
   hours: number
+  /** Plot height. The detail page stacks its four panels, so each one is as wide
+   * as the page; 150 was sized for a half-width panel and left a band. */
   height?: number
 }) {
   const [ref, [w, h]] = useBoxSize<HTMLDivElement>()

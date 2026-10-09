@@ -944,7 +944,11 @@ img {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 10px;
-  fill: var(--faint);
+  /* `--faint` is a rule colour, not an ink one: at 2.2:1 on paper the tick
+     labels were decoration. They are readings -- the axis a series is measured
+     against -- so they wear `--ink-soft`, the same ink as the panel's own
+     reading, at 7.4:1 light and 9:1 dark. */
+  fill: var(--ink-soft);
 }
 
 /* ---------------------------------------------------------------- misc -- */
