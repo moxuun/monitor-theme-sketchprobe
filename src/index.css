@@ -520,7 +520,7 @@ img {
 .tab:hover {
   color: var(--ink-soft);
 }
-.tab[aria-selected="true"] {
+.tab[aria-pressed="true"] {
   color: var(--ink);
 }
 
