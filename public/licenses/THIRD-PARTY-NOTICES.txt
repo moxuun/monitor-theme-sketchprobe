@@ -217,9 +217,6 @@ Excalifont -- https://github.com/excalidraw/excalifont
 
 Natural Earth -- https://www.naturalearthdata.com/
   Raster and vector map data, public domain. Crediting the authors is not
-  required. Only the simplified 1:110m outline paths derived from it are
-  shipped (src/map/world.ts).
-
-Simple Icons -- https://simpleicons.org/
-  OS and distribution brand glyphs, CC0 1.0 Universal. CC0 waives copyright
-  but not trademark rights: the marks remain the property of their owners.
+  required. Two things derived from it are shipped in src/map/world.ts:
+  country outlines from the 1:110m admin 0 set, and the label points nodes
+  are pinned to from the 1:50m set (for the territories 1:110m omits).

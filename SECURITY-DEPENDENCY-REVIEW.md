@@ -15,7 +15,7 @@
 
 - 归档由 `.github/workflows/release.yml:35` 生成：
   `tar czf theme.tar.gz dist theme.json preview.png`
-  归档内容 = `dist/` + `theme.json` + `preview.png`，不含 `LICENSE`，也没有任何依赖许可文本。
+  归档内容 = `dist/` + `theme.json` + `preview.png`，不含 `LICENSE`。
 - 参考产物中 `dist/licenses/` **只有** `Excalifont-OFL.txt` 一个文件（由 Vite 从 `public/licenses/` 拷贝），未见其他第三方声明。
 - 生产依赖树共 **9 个包，全部为 MIT**；打包时经 tree-shaking，故下列为**应核对并保留声明的候选范围**，实际分发部分以产物为准：
   | 包 | 锁定版本 | 许可 | 类型 |
@@ -44,7 +44,7 @@ MIT 要求版权声明与许可声明随软件副本分发。主题以 `theme.ta
 
 ---
 
-### F2 — OS / 发行版图标来源为 Simple Icons，未记录来源，商标权未被 CC0 豁免（低-信息 · 授权/商标）
+### F2 — OS / 发行版图标来源与商标要求待核实（低-信息 · 授权/商标）
 
 **证据**
 
@@ -177,7 +177,7 @@ major 标签可被上游移动；若上游账号或标签被攻陷，代码会�
 
 | 对象 | 授权 | 状态 |
 | --- | --- | --- |
-| Excalifont 字体 | SIL OFL-1.1，`Copyright (c) 2024 by Excalidraw` | ✅ 已核实：OFL 全文随包分发（`public/licenses/Excalifont-OFL.txt` → `dist/licenses/`） |
+| Excalifont 字体 | SIL OFL-1.1，`Copyright (c) 2024 by Excalidraw` | ⚠️ 源码提供版权行与 OFL 全文（`public/licenses/Excalifont-OFL.txt`），参考产物中可见于 `dist/licenses/`；**实际发布包未验证** |
 | 世界地图数据 | 公有领域（Natural Earth） | ✅ 已核实：官方 terms 页面明确「in the public domain… Crediting the authors is unnecessary」；仓库仅分发生成的路径数据，原始 GeoJSON 缓存在 gitignore 的 `.cache/` |
 | OS / 发行版图标 | Simple Icons，CC0-1.0 | ⚠️ 仅核实 Apple 一例（与上游一致）；**其余 14 个图形来源与授权待核实**，商标权未豁免（见 F2） |
 | country-flag-icons 及另外 8 个生产依赖候选 | MIT | ⚠️ 源码发布配置未明确覆盖这些 MIT 声明，参考产物中也未见；基线构建与实际发布归档未验证（见 F1） |
@@ -200,7 +200,7 @@ major 标签可被上游移动；若上游账号或标签被攻陷，代码会�
   1. hub 侧 `/api/nodes` 对匿名请求的字段白名单（F7）；
   2. `src/components/Icon.tsx` 图标是否为外部来源（§三）；
   3. 所分发字体相对上游是否被修改（§三）；
-  4. PNG 素材的元数据与像素内容：本次仅查看了 `preview.png`，并对 `preview.png` 与 `map-preview/shot-*.png` 做过有限的字符串检索；**未查看 map-preview 截图内容，未完成元数据审计**，不能据此断言这些素材不含敏感信息；
+  4. PNG 素材的元数据与像素内容：本次用 `file` / `exiftool` 检查了 `preview.png`、`preview-dark.png`、`map-preview/shot-full.png`、`public/apple-touch-icon.png`，并对 `preview.png`、`preview-dark.png` 做了 `strings` 检索；**`map-preview/shot-{dark,narrow,seam,zoom}.png` 未查看，且未做像素内容审计**，不能据此断言这些素材不含敏感信息；
   5. 注册表公告之外的传递依赖风险；git 历史中的秘密（未扫描历史）。
 - 本报告不含任何秘密值。
 
@@ -219,19 +219,21 @@ major 标签可被上游移动；若上游账号或标签被攻陷，代码会�
 
 ---
 
-## 五、修复状态（本次提交）
+## 五、修复状态（源码）
 
 本节记录对上述发现的处置。报告其余部分仍描述基线 `413c173` 的原始状态，§四 中「本报告是本工作区唯一新增文件」只适用于审查阶段。
 
 | 发现 | 处置 | 落点 |
 | --- | --- | --- |
-| F1 | 已修 | 新增 `public/licenses/THIRD-PARTY-NOTICES.txt`（9 个 MIT 包的完整许可文本，逐包保留上游版权行）；`release.yml` 归档加入 `LICENSE` |
-| F3 | 已修 | `README.md` 的「已知限制」改为按国家码落点；第三方资源清单补全并指向声明文件 |
-| F4 | 已修 | `ci.yml`、`release.yml` 中 `actions/checkout` 与 `actions/setup-node` 固定到 `v7` 标签所指提交 |
-| F5 | 已修 | `ci.yml` 增加顶层 `permissions: contents: read` |
-| F2 | 未修 | 图标来源与商标归属需产品决定，报告仅记录核实结果 |
+| F1 | 源码已修 | 新增 `public/licenses/THIRD-PARTY-NOTICES.txt`（9 个 MIT 包的完整许可文本，逐包保留上游版权行）；`release.yml` 归档加入 `LICENSE` |
+| F3 | 源码已修 | `README.md` 的「已知限制」改为按国家码落点；第三方资源清单补全并指向声明文件 |
+| F4 | 源码已修 | `ci.yml`、`release.yml` 中 `actions/checkout` 与 `actions/setup-node` 固定到 `v7` 标签所指提交 |
+| F5 | 源码已修 | `ci.yml` 增加顶层 `permissions: contents: read` |
+| F2 | 未修 | 未解决来源问题；已从 `README.md` 与声明文件中移除未经核实的 CC0 断言，待核实项保留在本报告内 |
 | F6 | 未修 | 按用户选择不引入 Dependabot；`npm audit` 门禁仍为可选建议 |
 | F7 | 未修 | 属 hub 契约，不在本仓库范围 |
+
+上表「源码已修」指改动已落在源码：**本次未执行构建、未运行远端 CI**，发布产物与 `theme.tar.gz` 的实际内容未验证。
 
 F4 固定的提交：`actions/checkout` → `3d3c42e5aac5ba805825da76410c181273ba90b1`，`actions/setup-node` → `949feb2413d6458794dcd2491c4babbbce0c15c1`（均以 `git ls-remote` 解析 `refs/tags/v7` 得到）。
 

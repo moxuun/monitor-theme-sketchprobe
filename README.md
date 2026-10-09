@@ -111,7 +111,7 @@ npm run preview:mock   # 用构建产物跑一遍，验证生产包
 ## 已知限制
 
 - **中文不是手写体。** Excalifont 只覆盖拉丁字母和数字，中文落回读者系统的楷体（见 `src/index.css` 的 `--font-hand`）。打包一套中文手写体要 6–13 MB，不值得让状态页的访客为一个标签下载。
-- **地图按国家码落点。** 节点按 `country` 落在手绘世界地图上，同一国家的多个节点共用一个标记，标记落在国家标注点而不是机器位置；地图跟随上方的分组标签一起过滤，没有 `country` 的节点不出现在地图上。海岸线只到 Natural Earth 1:110m，放大超过 4 倍就会看出折线感。
+- **地图按国家码落点。** 节点按 `country` 落在手绘世界地图上，同一国家的多个节点共用一个标记，标记落在国家标注点而不是机器位置；地图跟随上方的分组标签一起过滤，没有 `country` 的节点不出现在地图上。海岸线只到 Natural Earth 1:110m，缩放上限为 4 倍。
 - **历史桶的 `minutes` 没用上。** 数据里每个桶带了自己覆盖多少分钟，主题没拿它算在线率——某行不满额说明那段时间节点掉过线，但图上直接看不出来。
 
 ## 许可
@@ -125,7 +125,6 @@ npm run preview:mock   # 用构建产物跑一遍，验证生产包
 - [rough.js](https://www.npmjs.com/package/roughjs) —— MIT（手绘线条，含 hachure-fill / path-data-parser / points-on-curve / points-on-path）
 - [React](https://www.npmjs.com/package/react) / [react-dom](https://www.npmjs.com/package/react-dom) / [scheduler](https://www.npmjs.com/package/scheduler) —— MIT
 - [Natural Earth](https://www.naturalearthdata.com/) —— 地图数据，公有领域
-- [Simple Icons](https://simpleicons.org/) —— CC0-1.0（OS 图标；CC0 不转移商标权）
 
 每个依赖的完整 MIT 许可文本见 [`public/licenses/THIRD-PARTY-NOTICES.txt`](public/licenses/THIRD-PARTY-NOTICES.txt)。
 
