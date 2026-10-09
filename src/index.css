@@ -389,6 +389,36 @@ img {
   background: var(--paper-2);
 }
 
+/* The two ends of a page that runs to two or three screens. Pinned rather than
+   parked in the footer, where "跳到底部" would already be at the bottom and
+   "回到顶部" would be a screen away from the reader who wants it. */
+.jump {
+  position: fixed;
+  /* Sits in the card's right margin, its left edge a little inside the content
+     edge: at the window's own edge it covered the last 8px of the right-hand
+     column's readings as they scrolled past. 4px inside the window when the
+     shell fills it, and the same 4px past the shell's own edge once it is
+     centred past 1440px. */
+  right: max(4px, calc((100vw - 1440px) / 2 + 4px));
+  bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* A card's whole surface is a link at 2, and these sit over the cards. */
+  z-index: 3;
+}
+
+/* Over the cards rather than in the bar, so the icons need their own ground. */
+.jump .icon-btn {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+}
+
+.jump .icon-btn:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 3px;
+}
+
 /* --------------------------------------------------------------- notice -- */
 
 .notice {
@@ -682,7 +712,11 @@ img {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 11.5px;
-  color: var(--ink-soft);
+  /* The reading, not the label: full ink, so the figure is what the row is read
+     for. The size stays at 11.5px because the 122px column above is what the
+     longest value the format can produce needs -- "1023 MB / 2.00 GB", 115px at
+     this size -- and one step up to 12px would spend all but 1.6px of that. */
+  color: var(--ink);
   text-align: right;
   white-space: nowrap;
   overflow: hidden;
@@ -938,8 +972,11 @@ img {
 .panel-now {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: 13px;
-  color: var(--ink-soft);
+  /* One step under the title in size, but in the title's own ink: this is what
+     the panel is for, and at 13px in `--ink-soft` the label outranked the
+     figure on size and on weight both. */
+  font-size: 14px;
+  color: var(--ink);
 }
 
 /* --------------------------------------------------------------- chart -- */
