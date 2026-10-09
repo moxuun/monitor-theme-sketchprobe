@@ -241,6 +241,31 @@ export function App() {
           </div>
         )}
 
+        {/* Both pages run to two or three screens and the bar scrolls away with
+            them, so the two ends are reachable without dragging the scrollbar.
+            The targets are read when a button is pressed rather than when the
+            page was drawn: the fleet keeps arriving underneath it. */}
+        <div className="jump">
+          <button
+            className="icon-btn"
+            type="button"
+            aria-label="回到顶部"
+            title="回到顶部"
+            onClick={() => scrollTo(0, 0)}
+          >
+            <Icon name="up" size={14} />
+          </button>
+          <button
+            className="icon-btn"
+            type="button"
+            aria-label="跳到底部"
+            title="跳到底部"
+            onClick={() => scrollTo(0, document.documentElement.scrollHeight)}
+          >
+            <Icon name="down" size={14} />
+          </button>
+        </div>
+
         <footer className="footer">
           <span>Monitor</span>
           <a href="/licenses/Excalifont-OFL.txt" target="_blank" rel="noreferrer">

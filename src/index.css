@@ -389,6 +389,41 @@ img {
   background: var(--paper-2);
 }
 
+/* The two ends of a page that runs to two or three screens. Pinned rather than
+   parked in the footer, where "跳到底部" would already be at the bottom and
+   "回到顶部" would be a screen away from the reader who wants it. */
+.jump {
+  position: fixed;
+  /* Sits in the shell's right margin, which is 22px wide; the readings it passes
+     end 37px in from the window edge (22px shell + 15px panel padding), so a
+     button narrower than 33px clears the figure column. 4px inside the window
+     when the shell fills it, and the same 4px past the shell's own edge once it
+     is centred past 1440px. */
+  right: max(4px, calc((100vw - 1440px) / 2 + 4px));
+  bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* A card's whole surface is a link at 2, and these sit over the cards. */
+  z-index: 3;
+}
+
+/* Over the cards rather than in the bar, so the icons need their own ground. */
+.jump .icon-btn {
+  /* 26px, not the bar's 32px: at 32 the button's left edge landed 1px inside the
+     figure column, which left no room for a font fallback to widen a reading.
+     26px keeps 9px of clearance and is still over the 24px minimum target. */
+  width: 26px;
+  height: 26px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+}
+
+.jump .icon-btn:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 3px;
+}
+
 /* --------------------------------------------------------------- notice -- */
 
 .notice {
@@ -686,7 +721,14 @@ img {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 11.5px;
-  color: var(--ink-soft);
+  /* The reading, not the label: full ink, so the figure is what the row is read
+     for. The label is muted, so the figure was already the darker of the two --
+     what was left was weight, and the size stays at 11.5px because the 122px
+     column above is sized for the longest value the format can produce (about
+     115px here, about 120px one step up). One step up still fits on this machine
+     but leaves almost nothing for a fallback face to be wider than the one
+     measured, so the size is left alone. */
+  color: var(--ink);
   text-align: right;
   white-space: nowrap;
   overflow: hidden;
@@ -942,8 +984,10 @@ img {
 .panel-now {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: 13px;
-  color: var(--ink-soft);
+  /* One step under the title in size, but in the title's own ink: at 13px in
+     `--ink-soft` the label outranked the figure on size and on weight both. */
+  font-size: 14px;
+  color: var(--ink);
 }
 
 /* --------------------------------------------------------------- chart -- */

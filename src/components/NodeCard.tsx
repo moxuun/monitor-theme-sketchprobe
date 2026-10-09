@@ -17,12 +17,12 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
   const trafficPct = percent(node.month_used ?? 0, node.traffic_limit)
 
   return (
-    <SketchBox
-      className="card"
-      seedKey={`card-${node.id}`}
-      radius={11}
-      fill={status.tone === "off" ? "var(--muted)" : "var(--hatch)"}
-    >
+    // The ground is the same pencil wash whether the node is up or down. Filled
+    // in `--muted`, an offline card read as a hole punched in the page and drew
+    // the eye harder than anything on it -- and an offline card carries the
+    // fewest figures of all, so what it drew the eye to was an empty patch. The
+    // status is on the badge beside the name, which is where it is looked for.
+    <SketchBox className="card" seedKey={`card-${node.id}`} radius={11} fill="var(--hatch)">
       {/* A real anchor over the whole card rather than a click handler on the
           box: it is reachable by keyboard and announced as a link, and a middle
           or modified click opens the node in its own tab. */}
