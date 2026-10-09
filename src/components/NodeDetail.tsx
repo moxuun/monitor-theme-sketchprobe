@@ -81,12 +81,17 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
           <div>
             <div className="detail-name-row">
               <h1>{node.name}</h1>
-              {node.os ? <OsIcon os={node.os} className="detail-os" /> : null}
             </div>
             <div className="row tiny muted">
               <span>{node.group || "未分组"}</span>
               <span>·</span>
-              <span>{node.os ? osName(node.os) : "未上报系统信息"}</span>
+              {/* The distro's mark belongs beside the distro's name, not in a
+                  box of its own next to the machine's: it says the same thing
+                  the row already spells out, so it is set inline with it. */}
+              <span className="with-icon">
+                {node.os ? <OsIcon os={node.os} variant="inline" size={16} /> : null}
+                {node.os ? osName(node.os) : "未上报系统信息"}
+              </span>
             </div>
           </div>
         </div>
