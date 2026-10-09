@@ -617,9 +617,9 @@ img {
   line-height: 1.25;
   /* The name's weight in the line break: with a fixed basis the badges are
      weighed on their own, and the name no longer shrinks to zero to make room
-     for them. 100px keeps one badge beside the name, and sends two to their
-     own line. The name itself wraps rather than ellipsises, so a long machine
-     name is read in full. */
+     for them. 100px keeps one badge beside the name, and lets the pair move to
+     a line of their own when there is no room for both. The name itself wraps
+     rather than ellipsises, so a long machine name is read in full. */
   flex: 1 1 100px;
   min-width: 0;
   overflow-wrap: anywhere;

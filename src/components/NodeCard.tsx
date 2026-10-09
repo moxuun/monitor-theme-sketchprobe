@@ -32,9 +32,8 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
       <div className="card-head">
         <Flag country={node.country} className="card-flag" />
         <span className="card-name">{node.name}</span>
-        {/* Grouped so the pair moves as one: two badges never fit beside a
-            readable name, so they take a line of their own rather than
-            squeezing the name to nothing. */}
+        {/* Grouped so the pair moves as one: when both do not fit beside the
+            name they take a line of their own instead of squeezing it. */}
         <span className="card-badges">
           {expiry ? <Badge tone={expiry.tone}>{expiry.text}</Badge> : null}
           <Badge tone={status.tone} dot={status.dot}>
