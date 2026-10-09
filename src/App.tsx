@@ -268,8 +268,23 @@ export function App() {
 
         <footer className="footer">
           <span>Monitor</span>
+          <a
+            href="https://sketchprobe.monitor-themes.pages.dev/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            在线预览
+          </a>
           <a href="/licenses/Excalifont-OFL.txt" target="_blank" rel="noreferrer">
             字体 Excalifont · OFL-1.1
+          </a>
+          <a
+            className="credit"
+            href="https://github.com/moxuun/monitor-theme-sketchprobe"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Theme by moxuun
           </a>
         </footer>
       </div>

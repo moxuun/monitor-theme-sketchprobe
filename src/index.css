@@ -1048,6 +1048,8 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Four items stop fitting on one line on a phone. */
+  flex-wrap: wrap;
   gap: 14px;
   font-size: 12px;
   color: var(--faint);
@@ -1055,6 +1057,12 @@ img {
 
 .footer a:hover {
   color: var(--muted);
+}
+
+/* The author credit keeps the same quiet colour and steps down a size, so it
+   reads as a footnote to the licence line rather than as a link of its own. */
+.footer .credit {
+  font-size: 0.9em;
 }
 
 /* ------------------------------------------------------------- world map -- */
