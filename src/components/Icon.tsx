@@ -138,6 +138,25 @@ const PATHS = {
     "M4.8 6.5 6.8 8 4.8 9.5",
     "M8.2 9.5h2.8",
   ],
+  // A limit bar over an arrow: the ceiling a traffic allowance runs into. The
+  // bar is held well clear of the arrowhead -- at 13px a bar sitting on the head
+  // closes the two into one smudged mark.
+  quota: [
+    "M2.7 3c3.5-.05 7-.05 10.6 0",
+    "M8 12.8c.05-2.2.1-4.3.15-6.5",
+    "M5.4 9.2c.85-1 1.68-2 2.55-3 .8 1 1.6 1.98 2.6 3",
+  ],
+  // The sum mark, for a running total. One stroke rather than the two of a
+  // drawn sigma: a second stroke at this size meets the first and the middle
+  // vertex fills in.
+  sum: ["M11.45 3.35c-2.2-.05-4.4-.05-6.55 0l3.2 4.65-3.2 4.65c2.15.05 4.35.05 6.55 0"],
+  // A price tag: the body with its point, and the grommet hole as a speck. The
+  // hole is a dot rather than a ring -- a ring of this size closes up into the
+  // same dot, with its inner edge lost.
+  tag: [
+    "M4.9 3.4h7.5c.6 0 1.1.5 1.1 1.1v7c0 .6-.5 1.1-1.1 1.1h-7.5l-2.55-2.55c-.3-.75-.3-3.35 0-4.1l2.55-2.55Z",
+    "M10.6 5.6c.4-.02.72.32.72.7 0 .4-.32.71-.72.71-.4 0-.72-.31-.72-.71 0-.38.32-.72.72-.7Z",
+  ],
 } as const
 
 /**
