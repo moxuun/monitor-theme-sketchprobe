@@ -5,12 +5,12 @@
 <h1 align="center">SketchProbe</h1>
 
 <p align="center">
-  <strong>monitor 的手绘风格主题。</strong>
+  <strong><a href="https://github.com/monitor-probe/monitor">极简探针</a> 的手绘风格主题。</strong>
 </p>
 
 <p align="center">
   可以查看服务器状态、资源使用情况、流量和网络延迟。<br>
-  需要配合 monitor 使用，不能单独运行。
+  需要配合 <a href="https://github.com/monitor-probe/monitor">极简探针</a> 使用，不能单独运行。
 </p>
 
 <p align="center">
