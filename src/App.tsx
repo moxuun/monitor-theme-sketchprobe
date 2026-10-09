@@ -114,8 +114,8 @@ export function App() {
   // regroups its last node -- and an empty page with a tab selected for nothing
   // reads as a failure rather than as a change.
   useEffect(() => {
-    if (group !== null && group !== "" && !groups.includes(group)) setGroup(null)
-  }, [group, groups])
+    if (!tabs.some((t) => t.key === group)) setGroup(null)
+  }, [group, tabs])
 
   const shown = useMemo(
     () => (nodes ?? []).filter((n) => group === null || (n.group ?? "") === group),
