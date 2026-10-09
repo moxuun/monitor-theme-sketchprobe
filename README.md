@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="#界面预览">界面预览</a> · <a href="#主要特点">主要特点</a> · <a href="#页面能看什么">页面能看什么</a> · <a href="#安装方法">安装方法</a> · <a href="#主题设置">主题设置</a> · <a href="#说明">说明</a> · <a href="#许可">许可</a>
+  <a href="#界面预览">界面预览</a> · <a href="#主要特点">主要特点</a> · <a href="#页面能看什么">页面能看什么</a> · <a href="#技术与设计">技术与设计</a> · <a href="#安装方法">安装方法</a> · <a href="#主题设置">主题设置</a> · <a href="#许可">许可</a>
 </p>
 
 ## 界面预览
@@ -58,28 +58,22 @@
   - 显示计费周期、价格、到期剩余天数与累计总流量。
   - 查看 CPU、内存、磁盘和网速的历史变化折线图，支持切换时间范围。
 
+## 技术与设计
+
+- **React、TypeScript、Vite**：分别用于页面组件、类型支持与项目构建。
+- **Rough.js**：绘制卡片边框、分隔线等手绘线条。
+- **Excalidraw**：界面参考了 Excalidraw 的手绘白板风格。
+- **Nord**：配色参考了 Nord 的低饱和色彩风格，并针对纸张底色与深色模式做了适配。
+- **Excalifont**：英文字母和数字使用的手写字体；中文使用访问设备上的本地字体，不同系统的显示效果可能略有差异。
+- **country-flag-icons**：提供节点列表中的国旗图标。
+
 ## 安装方法
 
-### 方式一：后台直接上传（推荐）
 
-1. 从 [Releases](https://github.com/moxuun/monitor-theme-sketchprobe/releases) 下载 `theme.tar.gz`。
-2. 登录 monitor hub 后台，进入「主题」页面。
-3. 上传下载好的 `theme.tar.gz` 文件。
-4. 在主题列表里启用 SketchProbe。
+1. 登录 monitor hub 后台，进入「主题」页面。
+2. 上传下载好的 `theme.tar.gz` 文件,或者粘贴主题GitHub链接。
+3. 在主题列表里启用 SketchProbe。
 
-<details>
-<summary>方式二：手动解压安装</summary>
-
-解压到 hub 启动参数 `--themes` 指向的目录下，子目录名使用 `sketchprobe`：
-
-```bash
-mkdir -p /path/to/themes/sketchprobe
-tar -xzf theme.tar.gz -C /path/to/themes/sketchprobe
-```
-
-解压后重启 hub，或在后台刷新主题列表。
-
-</details>
 
 ## 主题设置
 
@@ -91,10 +85,6 @@ tar -xzf theme.tar.gz -C /path/to/themes/sketchprobe
 | **显示汇总** | 节点列表上方的四格汇总卡片开关 | 开启 | 开启 / 关闭 |
 | **底纹** | 页面背景样式 | 方格纸 | 方格纸、点阵纸、横线纸、空白纸 |
 | **手绘程度** | 线条的弯曲程度 | 2 | 0（最规整）~ 4（最潦草） |
-
-## 说明
-
-- **中文字体**：英文字母和数字使用内置的 Excalifont 手写体；中文使用访问设备上的本地字体，不同系统或浏览器下的显示效果可能略有差异。
 
 ## 许可
 
