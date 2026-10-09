@@ -3,7 +3,7 @@ import type { Drawable } from "roughjs/bin/core"
 import type { RoughGenerator } from "roughjs/bin/generator"
 
 import { cx } from "@/lib/cx"
-import { generator, seedOf, toPaths, wobbleFactor } from "@/sketch/core"
+import { generator, pathStyle, seedOf, toPaths, wobbleFactor } from "@/sketch/core"
 import { bar, frame, penCircle, rule } from "@/sketch/shapes"
 
 const WobbleContext = createContext(2)
@@ -116,7 +116,7 @@ export function SketchSvg({
         // Inline style rather than attributes: the palette reaches the shape as
         // `var(--ok)` or `currentColor`, and a custom property in a presentation
         // attribute is not resolved by every browser, while in a style it is.
-        <path key={i} d={p.d} style={{ stroke: p.stroke, strokeWidth: String(p.strokeWidth), fill: p.fill, strokeDasharray: p.strokeLineDash?.join(" ") }} />
+        <path key={i} d={p.d} style={pathStyle(p)} />
       ))}
     </svg>
   )

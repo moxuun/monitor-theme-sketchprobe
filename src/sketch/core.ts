@@ -66,6 +66,24 @@ export function toPaths(drawable: Drawable): SketchPath[] {
 }
 
 /**
+ * The inline style for a drawn path -- one place, rather than the same three
+ * properties written out again at every SVG site in the app.
+ *
+ * That copying is how the dash went missing: a chart gridline asked rough.js for
+ * `[5, 6]` and came out solid, because the site drawing it never read the option
+ * back off the path.
+ */
+export function pathStyle(p: SketchPath): { stroke: string; strokeWidth: string; fill?: string; strokeDasharray?: string } {
+  return {
+    stroke: p.stroke,
+    strokeWidth: String(p.strokeWidth),
+    fill: p.fill,
+    // `undefined` rather than "none", so a solid path carries no dash attribute.
+    strokeDasharray: p.strokeLineDash?.join(" "),
+  }
+}
+
+/**
  * A rounded rectangle as a path, since rough.js has no rounded rectangle.
  *
  * Cards and buttons in a hand-drawn sketch are rectangles with soft corners; a
