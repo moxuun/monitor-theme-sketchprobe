@@ -20,6 +20,10 @@
 </p>
 
 <p align="center">
+  Theme by <a href="https://github.com/moxuun/monitor-theme-sketchprobe">moxuun</a>
+</p>
+
+<p align="center">
   <a href="#界面预览">界面预览</a> · <a href="#主要特点">主要特点</a> · <a href="#页面能看什么">页面能看什么</a> · <a href="#技术与设计">技术与设计</a> · <a href="#安装方法">安装方法</a> · <a href="#主题设置">主题设置</a> · <a href="#许可">许可</a>
 </p>
 

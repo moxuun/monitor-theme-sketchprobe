@@ -1,0 +1,55 @@
+name: pages
+
+# The theme itself is served by a hub at the root of a domain: its routes match
+# from the start of the pathname and its font sits at /fonts. A project site is
+# served under /<repo>/, which none of that survives, so this publishes a
+# static preview page instead of the app.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "preview.png"
+      - "preview-dark.png"
+      - "public/fonts/Excalifont-Regular.woff2"
+      - "public/licenses/Excalifont-OFL.txt"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+# One deploy at a time, and never cancel one that is already publishing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+# Reading the source and publishing the artifact; deploy-pages takes the token
+# from id-token rather than a secret.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      # Pinned to the commit each tag points at: a major tag is a moving
+      # reference its owner can repoint, and this workflow runs on every push.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      # The images and the font are the repository's own, copied in rather than
+      # duplicated under site/, so the page cannot drift from what the theme
+      # ships in its release.
+      - run: |
+          mkdir -p _site/fonts _site/licenses
+          cp -r site/. _site/
+          cp preview.png preview-dark.png _site/
+          cp public/fonts/Excalifont-Regular.woff2 _site/fonts/
+          cp public/licenses/Excalifont-OFL.txt _site/licenses/
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
