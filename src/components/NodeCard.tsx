@@ -119,12 +119,14 @@ export function NodeCard({ node, latency }: { node: Node; latency?: LatencyResul
               {rate(m.net_tx)}
             </span>
           </span>
-        ) : (
+        ) : node.group ? (
           // The group moves to the left when there is no throughput to show, so
           // the row never has a side that is blank for no reason.
-          <span className="tiny">{node.group || "未分组"}</span>
-        )}
-        {m ? <span className="tiny">{node.group || "未分组"}</span> : null}
+          <span className="tiny">{node.group}</span>
+        ) : null}
+        {/* An ungrouped node says nothing here rather than announcing that it
+            has no group. */}
+        {m && node.group ? <span className="tiny">{node.group}</span> : null}
       </div>
     </SketchBox>
   )

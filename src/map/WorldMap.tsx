@@ -636,7 +636,7 @@ export function WorldMap({ nodes }: { nodes: Node[] }) {
                   <Link className="map-node" data-tone={toneOf(n)} href={`/node/${n.id}`}>
                     <span className="map-node-dot" />
                     <span className="map-node-name">{n.name}</span>
-                    <span className="map-dim">{n.group || "未分组"}</span>
+                    {n.group ? <span className="map-dim">{n.group}</span> : null}
                     <span className="map-node-fig">{figureOf(n)}</span>
                   </Link>
                 </li>

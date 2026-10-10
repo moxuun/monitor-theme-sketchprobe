@@ -83,8 +83,14 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
               <h1>{node.name}</h1>
             </div>
             <div className="row tiny muted">
-              <span>{node.group || "未分组"}</span>
-              <span>·</span>
+              {/* The separator goes with the group: an ungrouped node drops both
+                  rather than leaving a dot hanging in front of the distro. */}
+              {node.group ? (
+                <>
+                  <span>{node.group}</span>
+                  <span>·</span>
+                </>
+              ) : null}
               {/* The distro's mark belongs beside the distro's name, not in a
                   box of its own next to the machine's: it says the same thing
                   the row already spells out, so it is set inline with it. */}

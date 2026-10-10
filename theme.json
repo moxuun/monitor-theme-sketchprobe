@@ -2,7 +2,7 @@
   "name": "SketchProbe",
   "short": "sketchprobe",
   "description": "手绘工程草图风，灵感来自 Excalidraw、Nord 主题",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "moxuun",
   "url": "https://github.com/moxuun/monitor-theme-sketchprobe",
   "config": [
@@ -20,6 +20,13 @@
       "label": "显示汇总",
       "default": true,
       "help": "节点列表上方的节点数、最忙节点、流量和网速四格"
+    },
+    {
+      "key": "show_credit",
+      "type": "boolean",
+      "label": "显示页脚署名",
+      "default": true,
+      "help": "页面底部的「Theme by moxuun」，关闭后页脚整行不显示"
     },
     { "type": "title", "label": "纸张" },
     {

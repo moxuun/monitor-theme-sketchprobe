@@ -127,6 +127,7 @@ export function App() {
   const wobble = typeof config.wobble === "number" ? config.wobble : 2
   const notice = typeof config.notice === "string" ? config.notice : ""
   const showSummary = config.show_summary !== false
+  const showCredit = config.show_credit !== false
 
   return (
     <SketchProvider wobble={wobble}>
@@ -266,16 +267,18 @@ export function App() {
           </button>
         </div>
 
-        <footer className="footer">
-          <a
-            className="credit"
-            href="https://github.com/moxuun/monitor-theme-sketchprobe"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Theme by moxuun
-          </a>
-        </footer>
+        {showCredit ? (
+          <footer className="footer">
+            <a
+              className="credit"
+              href="https://github.com/moxuun/monitor-theme-sketchprobe"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Theme by moxuun
+            </a>
+          </footer>
+        ) : null}
       </div>
     </SketchProvider>
   )
