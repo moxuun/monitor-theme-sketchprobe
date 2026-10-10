@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/moxuun/monitor-theme-sketchprobe/releases"><img src="https://img.shields.io/badge/release-v0.1.3-4e7ca1" alt="Release"></a>
+  <a href="https://github.com/moxuun/monitor-theme-sketchprobe/releases"><img src="https://img.shields.io/github/v/release/moxuun/monitor-theme-sketchprobe?label=release&color=4e7ca1" alt="Release"></a>
   <a href="https://github.com/monitor-probe/monitor"><img src="https://img.shields.io/badge/monitor-theme-6e8f5a" alt="monitor theme"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-bd8a2c" alt="License"></a>
 </p>
