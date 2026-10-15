@@ -14,6 +14,14 @@ export type MetricRow = {
   net_tx: number
   net_rx_max?: number
   net_tx_max?: number
+  /** Swap in use, in bytes. Absent from a hub predating 1.4.1. */
+  swap_used?: number
+  /** TCP connection count. Absent from a hub predating 1.4.1. */
+  tcp?: number
+  /** UDP socket count. Absent from a hub predating 1.4.1. */
+  udp?: number
+  /** Process count. Absent from a hub predating 1.4.1. */
+  procs?: number
   /** How many minutes this bucket covers, on an hourly tier. */
   minutes?: number
 }

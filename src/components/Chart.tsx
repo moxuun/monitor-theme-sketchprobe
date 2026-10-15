@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react"
 
-import { axisTop, byteTop, clockFor, quarters, rateAxis, timeTicks } from "@/lib/format"
+import { axisTop, byteTop, clockFor, countTop, quarters, rateAxis, timeTicks } from "@/lib/format"
 import type { MetricRow } from "@/lib/history"
 import { generator, pathStyle, toPaths } from "@/sketch/core"
 import { axes, gridLine } from "@/sketch/shapes"
@@ -12,6 +12,7 @@ import { useBoxSize, usePenFactor, useSketchSeed } from "@/sketch/Sketch"
  */
 export type Axis =
   | { kind: "linear"; unit: "percent" | "bytes"; floor: number; cap: number }
+  | { kind: "linear"; unit: "count" }
   | { kind: "log" }
 
 export type Series = {
@@ -39,6 +40,21 @@ function logScale(domain: [number, number], ticks: number[], height: number): Sc
 }
 
 const PAD = { left: 58, right: 10, top: 10, bottom: 20 }
+
+/**
+ * Advance width of one character of the chart's 10 px monospace tick label.
+ *
+ * The rendered axis measures 5.99 px per character ("09/24 00:00" is 65.9 px
+ * over 11), and every monospace face in `--font-mono` advances by about 0.60 em,
+ * so 0.62 em leaves a margin for whichever one the reader's system resolves to.
+ * The label width is what decides how many ticks fit, and a label that is wider
+ * than this estimate would collide, so it is rounded up rather than down.
+ */
+const CHAR_W = 6.2
+
+function labelWidth(clock: (ms: number) => string, t: number): number {
+  return clock(t).length * CHAR_W
+}
 
 /**
  * One resource over time, drawn as an instrument reading on hand-drawn axes.
@@ -76,13 +92,15 @@ export function ResourceChart({
   latest.current = { series, format }
   const kind = axis.kind
   const unit = axis.kind === "linear" ? axis.unit : "bytes"
-  const floor = axis.kind === "linear" ? axis.floor : 0
-  const cap = axis.kind === "linear" ? axis.cap : 0
+  const floor = axis.kind === "linear" && axis.unit !== "count" ? axis.floor : 0
+  const cap = axis.kind === "linear" && axis.unit !== "count" ? axis.cap : 0
 
   const plot = useMemo(() => {
     const iw = w - PAD.left - PAD.right
     const ih = h - PAD.top - PAD.bottom
-    if (iw <= 12 || ih <= 12 || rows.length < 2) return null
+    // One row is a window too: a node that has just come back has a single
+    // bucket, and it draws as a mark rather than as nothing at all.
+    if (iw <= 12 || ih <= 12 || rows.length < 1) return null
 
     const finite = (v: number | undefined): v is number => v !== undefined && Number.isFinite(v)
     // One axis across every series, so a download line and an upload line are
@@ -102,12 +120,20 @@ export function ResourceChart({
             const { domain, ticks } = rateAxis(Math.max(1, Math.min(...values)), Math.max(...values))
             return logScale(domain, ticks, ih)
           })()
-        : linearScale((unit === "bytes" ? byteTop : axisTop)(Math.max(...values), floor, cap), ih)
+        : linearScale(
+            unit === "count"
+              ? countTop(Math.max(...values))
+              : (unit === "bytes" ? byteTop : axisTop)(Math.max(...values), floor, cap),
+            ih,
+          )
 
     const from = rows[0].ts * 1000
     const to = rows[rows.length - 1].ts * 1000
     const span = Math.max(1, to - from)
-    const x = (ms: number) => ((ms - from) / span) * iw
+    // A lone sample has no span to be placed within, so it sits at the centre of
+    // the plot rather than hard against its left edge.
+    const lone = rows.length === 1
+    const x = (ms: number) => (lone ? iw / 2 : ((ms - from) / span) * iw)
 
     // Break the line where the samples stop. A node offline for a day leaves a
     // day of missing buckets, and drawing straight across it reads as a day of
@@ -119,6 +145,8 @@ export function ResourceChart({
     const drawn = latest.current.series.map((s) => {
       const lines: string[] = []
       const areas: string[] = []
+      /** A sample with no neighbour to draw a line to, rendered as a mark. */
+      const dots: string[] = []
       let run: string[] = []
       let first = 0
       let last = 0
@@ -126,22 +154,30 @@ export function ResourceChart({
         if (run.length > 1) {
           lines.push(`M${run.join("L")}`)
           areas.push(`M${run[0]}L${run.slice(1).join("L")}L${last},${ih}L${first},${ih}Z`)
+        } else if (run.length === 1) {
+          // A lone bucket between two gaps still happened, and a line chart that
+          // draws nothing for it reads as no data at all.
+          dots.push(run[0])
         }
         run = []
       }
       rows.forEach((r, i) => {
         const v = s.pick(r)
-        if (!finite(v) || (i > 0 && r.ts - rows[i - 1].ts > 2 * usual)) {
+        if (!finite(v)) {
           flush()
           return
         }
+        // The gap breaks the line before this sample rather than dropping it:
+        // the first reading after an outage is the one that says the node came
+        // back, and skipping it left every recovered node a bucket short.
+        if (i > 0 && r.ts - rows[i - 1].ts > 2 * usual) flush()
         const px = x(r.ts * 1000)
         if (!run.length) first = px
         last = px
         run.push(`${px.toFixed(1)},${scale.y(v).toFixed(1)}`)
       })
       flush()
-      return { lines, areas }
+      return { lines, areas, dots }
     })
 
     const rough = [
@@ -150,11 +186,26 @@ export function ResourceChart({
     ].flatMap(toPaths)
 
     const clock = clockFor(hours)
-    // The count is a cap, not a target: timeTicks takes the smallest round step
-    // that fits under it. Six labels sit comfortably across a desktop card but
-    // collide on a phone-width one, where the plot is ~250 px and each "13:00"
-    // is 30 px wide, so the cap follows the width actually available.
-    const xTicks = timeTicks(from, to, Math.max(2, Math.min(6, Math.floor(iw / 72))))
+    // `count` is a first guess, not the answer: it assumes a bare "13:00", while
+    // a window past a day labels each tick with a date and the label is twice as
+    // wide. The widths decide instead, dropping a tick whose label would touch
+    // the one before it. Dropping beats widening the step, which would move
+    // every tick off the round clock value the axis is read against.
+    //
+    // A label is not centred on its tick: the first starts there and the last
+    // ends there, so both reach a full width to one side. The candidate is
+    // checked as the last, its strictest position; a later tick pushing it to
+    // the middle only moves its edge right, away from the one before.
+    const xTicks: number[] = []
+    for (const t of timeTicks(from, to, Math.max(2, Math.min(6, Math.floor(iw / 72))))) {
+      const prev = xTicks[xTicks.length - 1]
+      if (prev !== undefined) {
+        const prevWidth = labelWidth(clock, prev)
+        const prevRight = x(prev) + (xTicks.length === 1 ? prevWidth : prevWidth / 2)
+        if (x(t) - labelWidth(clock, t) - prevRight < 4) continue
+      }
+      xTicks.push(t)
+    }
     return {
       ih,
       rough,
@@ -193,6 +244,10 @@ export function ResourceChart({
                       strokeLinecap="round"
                     />
                   ))}
+                  {d.dots.map((p, i) => {
+                    const [cx, cy] = p.split(",")
+                    return <circle key={i} cx={cx} cy={cy} r={1.7} fill={series[si]?.color} />
+                  })}
                 </g>
               ))}
             </g>

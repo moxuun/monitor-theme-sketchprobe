@@ -18,7 +18,7 @@ import {
   uptime,
   windows,
 } from "@/lib/format"
-import { useMetrics } from "@/lib/history"
+import { useMetrics, type MetricRow } from "@/lib/history"
 import { Badge } from "@/components/Badge"
 import { ResourceChart } from "@/components/Chart"
 import { Flag } from "@/components/Flag"
@@ -26,6 +26,29 @@ import { Icon, type IconName } from "@/components/Icon"
 import { Meter } from "@/components/Meter"
 import { OsIcon } from "@/components/OsIcon"
 import { SketchBox, SketchRing } from "@/sketch/Sketch"
+
+/**
+ * Whether any bucket in the window carries a field.
+ *
+ * The four fields below arrived in hub 1.4.1, and a theme is loaded by whatever
+ * hub the operator runs: on an older one they are simply absent from every row,
+ * and a panel of empty axes says less than no panel at all. `undefined` is the
+ * test rather than falsiness, so a genuine run of zeroes -- a machine with no
+ * TCP connections -- still counts as data.
+ */
+function has(rows: MetricRow[] | null, pick: (r: MetricRow) => number | undefined): boolean {
+  return rows === null || rows.some((r) => pick(r) !== undefined)
+}
+
+/** One entry of a chart's key: the pen it is drawn in, and what it is. */
+function Key({ color, label, value }: { color: string; label: string; value: string }) {
+  return (
+    <span className="chart-key">
+      <i style={{ background: color }} />
+      {label} {value}
+    </span>
+  )
+}
 
 function Fact({ label, children, hand }: { label: ReactNode; children: ReactNode; hand?: boolean }) {
   return (
@@ -72,6 +95,10 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
   const status = statusOf(node)
   const days = node.expires_in ?? daysUntil(node.expires_at)
   const trafficPct = percent(node.month_used ?? 0, node.traffic_limit)
+  // Swap can be switched off while the window still holds the pages that were in
+  // it, so the axis follows the history and the current capacity, whichever is
+  // larger: scaling against today's `swap_total` of zero would clip the old line.
+  const swapCap = (rows ?? []).reduce((top, r) => Math.max(top, r.swap_used ?? 0), node.swap_total)
 
   return (
     <div className="stack">
@@ -331,6 +358,23 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
             series={[{ pick: (r) => r.disk_used, color: "var(--ok)", fill: true }]}
           />
         </Panel>
+        {/* Kept while the window is still loading, so the page does not grow a
+            panel a second after it first paints. */}
+        {has(rows, (r) => r.swap_used) && (rows === null || swapCap > 0) ? (
+          <Panel
+            title="交换分区"
+            icon="ram"
+            now={m ? (m.swap_total > 0 ? pair(m.swap_used, m.swap_total) : "未启用") : "—"}
+          >
+            <ResourceChart
+              rows={rows ?? []}
+              hours={hours}
+              axis={{ kind: "linear", unit: "bytes", floor: swapCap * 0.15, cap: swapCap }}
+              format={axisBytes}
+              series={[{ pick: (r) => r.swap_used, color: "var(--warn)", fill: true }]}
+            />
+          </Panel>
+        ) : null}
         <Panel
           title="网络速率"
           icon="network"
@@ -349,6 +393,43 @@ export function NodeDetail({ node, historyDays }: { node: Node; historyDays: num
             ]}
           />
         </Panel>
+        {has(rows, (r) => r.tcp) || has(rows, (r) => r.udp) ? (
+          <Panel
+            title="连接数"
+            icon="server"
+            // Two lines in the same pen as the chart draws them: the network panel
+            // gets away without a key because its arrows say which is which, and
+            // these two have no such cue.
+            now={
+              <>
+                <Key color="var(--accent)" label="TCP" value={m ? String(m.tcp) : "—"} />
+                <Key color="var(--ok)" label="UDP" value={m ? String(m.udp) : "—"} />
+              </>
+            }
+          >
+            <ResourceChart
+              rows={rows ?? []}
+              hours={hours}
+              axis={{ kind: "linear", unit: "count" }}
+              format={(v) => v.toFixed(0)}
+              series={[
+                { pick: (r) => r.tcp, color: "var(--accent)" },
+                { pick: (r) => r.udp, color: "var(--ok)" },
+              ]}
+            />
+          </Panel>
+        ) : null}
+        {has(rows, (r) => r.procs) ? (
+          <Panel title="进程数" icon="chip" now={m ? String(m.procs) : "—"}>
+            <ResourceChart
+              rows={rows ?? []}
+              hours={hours}
+              axis={{ kind: "linear", unit: "count" }}
+              format={(v) => v.toFixed(0)}
+              series={[{ pick: (r) => r.procs, color: "var(--warn)", fill: true }]}
+            />
+          </Panel>
+        ) : null}
       </div>
     </div>
   )

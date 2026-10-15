@@ -288,6 +288,21 @@ export function byteTop(max: number, floor: number, cap: number): number {
 }
 
 /**
+ * A zero-anchored axis top for a count, whose quarters have to be whole numbers.
+ *
+ * `axisTop`'s ladder is wrong here: a top of 6 gives gridlines at 1.5 and 4.5,
+ * and half a process is not a reading. Stepping by 1, 2 or 5 of a decade keeps
+ * every quarter an integer at any magnitude.
+ */
+const COUNT_STEPS = [1, 2, 5]
+
+export function countTop(max: number): number {
+  const target = Math.max(max, 4) / 4
+  const decade = 10 ** Math.floor(Math.log10(target))
+  return (COUNT_STEPS.find((s) => s * decade >= target) ?? 10) * decade * 4
+}
+
+/**
  * The gridlines for a zero-anchored axis: the top and the three quarters beneath
  * it.
  *

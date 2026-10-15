@@ -988,6 +988,23 @@ img {
      `--ink-soft` the label outranked the figure on size and on weight both. */
   font-size: 14px;
   color: var(--ink);
+  /* The connection panel puts two labelled figures here instead of one. */
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+/* The pen each series is drawn in, beside the figure it belongs to. */
+.chart-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chart-key i {
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
 }
 
 /* --------------------------------------------------------------- chart -- */

@@ -22,8 +22,15 @@ function useTheme() {
   // OS preference into storage: a visitor who never touches the toggle should
   // keep following their desktop into dark mode at dusk.
   const [chosen, setChosen] = useState<Theme | null>(() => {
-    const saved = localStorage.getItem(THEME_KEY)
-    return saved === "light" || saved === "dark" ? saved : null
+    // Reading storage throws outright when it is denied -- blocked cookies, some
+    // private windows -- and the theme is a preference, not state the page needs
+    // to draw: fall back to the system and keep the choice in memory.
+    try {
+      const saved = localStorage.getItem(THEME_KEY)
+      return saved === "light" || saved === "dark" ? saved : null
+    } catch {
+      return null
+    }
   })
   const [system, setSystem] = useState<Theme>(() =>
     matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
@@ -42,7 +49,13 @@ function useTheme() {
 
   const choose = (next: Theme) => {
     setChosen(next)
-    localStorage.setItem(THEME_KEY, next)
+    // As above: the toggle still works when storage is denied, it just does not
+    // survive a reload.
+    try {
+      localStorage.setItem(THEME_KEY, next)
+    } catch {
+      /* nothing to do */
+    }
   }
   return [theme, choose] as const
 }
